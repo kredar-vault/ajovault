@@ -7,7 +7,7 @@ import { Container } from "./Container";
 export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-black/5 bg-[#FCFBF7]/80 backdrop-blur-xl">
-      <Container className="flex h-20 items-center justify-between">
+      <Container className="flex h-18 items-center justify-between">
         <Link
           href="/"
           className="flex items-center gap-1 text-[#169E5C] transition-opacity hover:opacity-80"

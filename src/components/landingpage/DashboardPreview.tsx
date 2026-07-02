@@ -12,7 +12,7 @@ export function DashboardPreview() {
             <Badge text="Dashboard Preview" />
 
             <h2 className="text-3xl font-light leading-[1.15] tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
-              <span className="mr-2 font-serif italic">See your savings</span>
+              <span className="mr-2">See your savings</span>
               <span className="font-bold">circle in action</span>
             </h2>
           </div>

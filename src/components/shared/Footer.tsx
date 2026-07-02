@@ -5,7 +5,7 @@ import { Container } from "./Container";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-[#006C49]">
+    <footer className="border-t border-white/5 bg-[#0B462C]">
       <Container>
         <div className="flex flex-col gap-8 py-12 md:flex-row md:items-center md:justify-between">
           

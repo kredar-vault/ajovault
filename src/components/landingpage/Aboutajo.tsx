@@ -133,7 +133,7 @@ export function Aboutajo() {
 
   return (
     <section className="w-full bg-[#FCFBF7] py-20 lg:py-24">
-      <Container className="max-w-6xl">
+      <Container className="max-w-5xl">
         {/* Header Section */}
         <div className="mx-auto mb-16 flex max-w-3xl flex-col items-center text-center">
           <div className="mb-4 inline-flex">
@@ -149,15 +149,15 @@ export function Aboutajo() {
         </div>
 
         {/* 3-Column Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
           {steps.map((item, index) => {
             return (
               <div
                 key={index}
-                className="group flex flex-col justify-between overflow-hidden rounded-[10px] bg-white p-5  transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                className="group flex flex-col justify-between overflow-hidden rounded-[10px] bg-white/60 p-5  transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
               >
                 {/* Visual Canvas */}
-                <div className="flex h-36 w-full items-center justify-center overflow-hidden rounded-xl bg-[#FAFAF9] p-4 transition-colors group-hover:bg-[#f4f4f2]">
+                <div className="flex h-26 w-full items-center justify-center overflow-hidden rounded-xl bg-[#FAFAF9] p-4 transition-colors group-hover:bg-[#f4f4f2]">
                   {item.visual}
                 </div>
 
