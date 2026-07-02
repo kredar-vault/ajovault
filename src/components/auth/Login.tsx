@@ -142,7 +142,7 @@ export function Login() {
                                 />
                                 <span className="text-sm text-gray-500">Remember me</span>
                             </label>
-                            <a href="#forgot" className="text-sm font-semibold text-[#10B981] hover:underline">
+                            <a href="/forgot-password" className="text-sm font-semibold text-[#10B981] hover:underline">
                                 Forgot password?
                             </a>
                         </div>
