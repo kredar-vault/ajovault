@@ -39,7 +39,7 @@ export function HowItWorks() {
         <div className="mx-auto mb-14 max-w-2xl space-y-4 text-center md:mb-20">
           <Badge text="The Process" />
 
-          <h2 className="pt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
+          <h2 className="pt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
             How it works from start to finish
           </h2>
 
@@ -49,7 +49,7 @@ export function HowItWorks() {
           </p>
         </div>
 
-        <div className="relative mt-10 hidden h-[420px] w-full lg:block xl:h-[500px]">
+        <div className="relative mt-10 hidden h-[420px] w-full lg:max-w-5xl mx-auto lg:block xl:h-[500px]">
           <div className="absolute inset-0 z-0 flex items-center">
             <svg
               className="h-full w-full text-gray-300"

@@ -41,7 +41,7 @@ export function FAQSection() {
         <div className="mx-auto mb-12 flex max-w-2xl flex-col items-center space-y-4 text-center md:mb-16">
           <Badge text="Questions" />
 
-          <h2 className="pt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
+          <h2 className="pt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
             Frequently Asked Questions
           </h2>
 
@@ -51,7 +51,7 @@ export function FAQSection() {
           </p>
         </div>
 
-        <div className="mx-auto max-w-xl space-y-2">
+        <div className="mx-auto max-w-5xl space-y-2">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
 

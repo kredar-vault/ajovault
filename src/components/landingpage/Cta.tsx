@@ -51,8 +51,8 @@ export function FinalCTA() {
             </div>
           ))}
 
-          <div className="relative z-10 mx-auto max-w-2xl space-y-5">
-            <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
+          <div className="relative z-10 mx-auto max-w-xl space-y-5">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
               Ready to Start Your Savings Circle?
             </h2>
 

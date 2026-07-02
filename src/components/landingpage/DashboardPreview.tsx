@@ -11,7 +11,7 @@ export function DashboardPreview() {
           <div className="space-y-4 lg:col-span-7">
             <Badge text="Dashboard Preview" />
 
-            <h2 className="text-3xl font-light leading-[1.15] tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
+            <h2 className="text-3xl font-light leading-[1.15] tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
               <span className="mr-2 font-serif italic">See your savings</span>
               <span className="font-bold">circle in action</span>
             </h2>
@@ -20,7 +20,7 @@ export function DashboardPreview() {
           <div className="lg:col-span-5 lg:pl-8">
             <p className="max-w-lg text-base leading-relaxed text-gray-500">
               Track contributions, monitor payouts, and stay connected with your
-              savings circle—all from{" "}
+              savings circle all from{" "}
               <span className="font-semibold text-gray-900">
                 one beautiful dashboard
               </span>
