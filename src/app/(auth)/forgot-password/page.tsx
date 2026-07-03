@@ -17,6 +17,7 @@ export default function ForgotPasswordWorkflow() {
 
       {/* 2. OTP Verification (Passes email step back to email page on close) */}
       <OTPModal 
+      type="forgot-password"
         isOpen={step === "otp"} 
         onClose={() => setStep("email")} 
         onVerifySuccess={() => setStep("reset")} 
@@ -28,7 +29,7 @@ export default function ForgotPasswordWorkflow() {
       )}
 
       {/* 4. Password Updated Success Confirmation */}
-      <SuccessModal isOpen={step === "success"} />
+      <SuccessModal type="forgot-password" isOpen={step === "success"} />
     </>
   );
 }

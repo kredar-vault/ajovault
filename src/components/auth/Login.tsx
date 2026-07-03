@@ -16,16 +16,14 @@ export function Login() {
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.2),transparent_50%)]" />
                 <div className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-[#19AEE8]/45 blur-[120px]" />
 
-                <Link
-                    href="/"
-                    className="flex items-center gap-3 group"
-                >
+              
+                  <Link href="/" className="flex items-center gap-2 relative z-10 w-fit">
                     <Image
                         src="/icon.svg"
                         alt="Ajo Vault"
-                        width={24}
-                        height={24}
-                        className="brightness-0 invert" // Ensures your icon turns crisp white against the green
+                        width={22}
+                        height={22}
+                        className="brightness-0 invert"
                     />
                     <span className="text-lg font-bold tracking-tight text-white">
                         Ajo Vault
@@ -148,6 +146,7 @@ export function Login() {
                         </div>
 
                         {/* Primary Action Button */}
+                        
                         <button
                             type="submit"
                             className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#001E2C]/90 active:scale-[0.995]"
@@ -164,12 +163,14 @@ export function Login() {
                     </div>
 
                     {/* Secondary Action Link Trigger */}
+                  <Link  href="signup/">
                     <button
                         type="button"
                         className="w-full rounded-lg border border-gray-200 bg-white py-3.5 text-center text-sm font-semibold text-gray-800 shadow-sm transition-colors hover:bg-gray-50/80 active:scale-[0.995]"
                     >
                         Create an Account
                     </button>
+                  </Link>
 
                 </div>
             </main>
