@@ -10,8 +10,11 @@ export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-[#F8FAFC] px-4 py-12">
-      <div className="w-full max-w-[440px] rounded-2xl bg-white p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100/80 space-y-6">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-[#F8FAFC] px-4 py-12 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.05),transparent_50%)] z-0" />
+      <div className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-[#19AEE8]/15 blur-[120px] z-0" />
+      
+      <div className="w-full max-w-[440px] rounded-2xl bg-white p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100/80 space-y-6 relative z-10">
         
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">
@@ -35,7 +38,7 @@ export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
               <input
                 type={showPass ? "text" : "password"}
                 required
-                placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
+                placeholder="••••••••"
                 className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
               />
               <button
@@ -54,7 +57,7 @@ export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
               <input
                 type={showConfirm ? "text" : "password"}
                 required
-                placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
+                placeholder="••••••••"
                 className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
               />
               <button

@@ -3,11 +3,12 @@ import React, { useState, useRef } from "react";
 
 interface OTPModalProps {
   isOpen: boolean;
+  type: "signup" | "forgot-password";
   onClose?: () => void;
   onVerifySuccess?: () => void;
 }
 
-export function OTPModal({ isOpen, onClose, onVerifySuccess }: OTPModalProps) {
+export function OTPModal({ isOpen, type, onClose, onVerifySuccess }: OTPModalProps) {
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(""));
   const inputRefs = useRef<HTMLInputElement[]>([]);
 
@@ -32,11 +33,13 @@ export function OTPModal({ isOpen, onClose, onVerifySuccess }: OTPModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[#001E2C]/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-white backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative w-full max-w-md transform rounded-2xl bg-white p-6 sm:p-10 shadow-2xl transition-all border border-gray-100 space-y-6">
+      <div className="relative w-full max-w-md transform rounded-2xl bg-white p-6 sm:p-10 transition-all border border-gray-100 space-y-6">
         <div className="space-y-2 text-center">
-          <h3 className="text-xl font-bold text-gray-900">Verify Your Identity</h3>
+          <h3 className="text-xl font-bold text-gray-900">
+            {type === "signup" ? "Verify Your Account" : "Verify Your Identity"}
+          </h3>
           <p className="text-xs sm:text-sm text-gray-500 max-w-[280px] mx-auto">
             We sent a 4-digit code to your email account. Enter it below to proceed.
           </p>

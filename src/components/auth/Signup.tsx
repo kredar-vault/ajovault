@@ -2,10 +2,30 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
+// Import the new modular components
+import { OTPModal } from "@/components/auth/Otpmodal";
+import { SuccessModal } from "@/components/auth/SucessModal";
 
 export function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    
+    // Auth Modal State Flow Management
+    const [isOtpOpen, setIsOtpOpen] = useState(false);
+    const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+
+    const handleSignUpSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // 1. Trigger API Registration logic here if needed
+        // 2. Launch OTP Verification Step
+        setIsOtpOpen(true);
+    };
+
+    const handleOtpVerificationSuccess = () => {
+        setIsOtpOpen(false);
+        // Step into Success Step
+        setIsSuccessOpen(true);
+    };
 
     return (
         <div className="flex min-h-screen w-full flex-col md:flex-row bg-[#001E2C]">
@@ -60,9 +80,9 @@ export function SignUp() {
                     </div>
                 </div>
 
-                <div className="relative z-10 flex gap-3 text-[11px] font-medium text-gray-400">
-                    <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1">Secure Authentication</span>
-                    <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1">Virtual Accounts</span>
+                {/* Footer Attribution Line */}
+                <div className="relative z-10 text-xs text-gray-500">
+                    &copy; {new Date().getFullYear()} Ajo Vault. Powered by Kredar.
                 </div>
             </section>
 
@@ -81,13 +101,14 @@ export function SignUp() {
                         </p>
                     </div>
 
-                    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                    <form className="space-y-4" onSubmit={handleSignUpSubmit}>
 
                         {/* Full Name */}
                         <div className="space-y-1.5">
                             <label className="text-xs font-bold text-gray-700">Full Name</label>
                             <input
                                 type="text"
+                                required
                                 placeholder="John Doe"
                                 className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
                             />
@@ -98,6 +119,7 @@ export function SignUp() {
                             <label className="text-xs font-bold text-gray-700">Email Address</label>
                             <input
                                 type="email"
+                                required
                                 placeholder="john@example.com"
                                 className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
                             />
@@ -108,6 +130,7 @@ export function SignUp() {
                             <label className="text-xs font-bold text-gray-700">Phone Number</label>
                             <input
                                 type="tel"
+                                required
                                 placeholder="+1 (555) 000-0000"
                                 className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
                             />
@@ -119,6 +142,7 @@ export function SignUp() {
                             <div className="relative flex items-center">
                                 <input
                                     type={showPassword ? "text" : "password"}
+                                    required
                                     placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                                     className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
                                 />
@@ -138,6 +162,7 @@ export function SignUp() {
                             <div className="relative flex items-center">
                                 <input
                                     type={showConfirmPassword ? "text" : "password"}
+                                    required
                                     placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                                     className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
                                 />
@@ -156,6 +181,7 @@ export function SignUp() {
                             <input
                                 type="checkbox"
                                 id="terms"
+                                required
                                 className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#10B981] focus:ring-[#10B981] accent-[#10B981]"
                             />
                             <label htmlFor="terms" className="text-xs text-gray-500 leading-tight">
@@ -166,7 +192,7 @@ export function SignUp() {
                         {/* Create Account Action */}
                         <button
                             type="submit"
-                            className="w-full rounded-lg bg-[#006C49] py-3 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#10B981]/90 active:scale-[0.995] pt-3.5 pb-3.5"
+                            className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#10B981]/90 active:scale-[0.995]"
                         >
                             Create Account
                         </button>
@@ -182,6 +208,19 @@ export function SignUp() {
 
                 </div>
             </main>
+
+            {/* Verification State Modals Layer */}
+            <OTPModal 
+                isOpen={isOtpOpen} 
+                type="signup" 
+                onClose={() => setIsOtpOpen(false)} 
+                onVerifySuccess={handleOtpVerificationSuccess} 
+            />
+            
+            <SuccessModal 
+                isOpen={isSuccessOpen} 
+                type="signup" 
+            />
         </div>
     );
 }
