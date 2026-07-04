@@ -3,10 +3,10 @@ import { ContributionProgress } from "@/types";
 
 export function ProgressCard({ progress }: { progress: ContributionProgress }) {
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-5 flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.02)] min-h-[220px]">
+    <div className="bg-white border border-gray-100 rounded-xl p-5 flex flex-col justify-between h-full shadow-[0_1px_3px_rgba(0,0,0,0.02)] min-h-[220px] gap-4">
       <h2 className="text-xs font-bold text-[#111827] tracking-tight">Contribution Progress</h2>
       
-      <div className="flex items-center justify-between gap-4 py-2">
+      <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-6 py-2">
         <div className="relative h-28 w-28 flex items-center justify-center shrink-0">
           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
             <path className="text-gray-100" strokeWidth="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -20,18 +20,18 @@ export function ProgressCard({ progress }: { progress: ContributionProgress }) {
           </div>
         </div>
 
-        <div className="border border-gray-100 rounded-lg p-3 w-full max-w-[130px] bg-white space-y-1.5 self-center">
+        <div className="border border-gray-100 rounded-lg p-3 w-full sm:max-w-[140px] bg-white space-y-1.5">
           <span className="text-[10px] font-bold text-[#111827] block pb-0.5 border-b border-gray-50">{progress.month}</span>
-          <div className="flex justify-between items-center text-[10px] font-medium text-[#4B5563]">
-            <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#15803D]" /> Received</span>
+          <div className="flex justify-between items-center text-[10px] font-medium text-[#4B5563] gap-4">
+            <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#15803D] shrink-0" /> Received</span>
             <span className="font-bold text-[#111827]">{progress.receivedCount}</span>
           </div>
-          <div className="flex justify-between items-center text-[10px] font-medium text-[#4B5563]">
-            <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#EAB308]" /> Pending</span>
+          <div className="flex justify-between items-center text-[10px] font-medium text-[#4B5563] gap-4">
+            <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#EAB308] shrink-0" /> Pending</span>
             <span className="font-bold text-[#111827]">{progress.pendingCount}</span>
           </div>
-          <div className="flex justify-between items-center text-[10px] font-medium text-[#4B5563]">
-            <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#921416]" /> Missed</span>
+          <div className="flex justify-between items-center text-[10px] font-medium text-[#4B5563] gap-4">
+            <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#921416] shrink-0" /> Missed</span>
             <span className="font-bold text-[#111827]">{progress.missedCount}</span>
           </div>
         </div>
