@@ -9,10 +9,8 @@ export function Login() {
     return (
         // Base layout wrapper: uses the deep #001E2C background globally so the layout shows through smoothly
         <div className="flex min-h-screen w-full flex-col md:flex-row bg-[#001E2C]">
-
-            {/* LEFT PANEL: Branding & Visual Mockups */}
             <section className="relative hidden w-1/2 flex-col justify-between p-12 text-white md:flex overflow-hidden">
-                {/* Soft emerald radial ambient gradient */}
+                
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.2),transparent_50%)]" />
                 <div className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-[#19AEE8]/45 blur-[120px]" />
 
@@ -58,7 +56,7 @@ export function Login() {
                         </p>
                     </div>
 
-                    {/* Floating Card 2: David Notification */}
+                   
                     <div className="ml-auto w-fit transform rounded-xl border border-white/10 bg-white/5 backdrop-blur-md p-4 transition-transform hover:scale-[1.02]">
                         <div className="flex items-start gap-3">
                             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#19AEE8]/20 font-bold text-[#19AEE8] text-sm">
@@ -80,10 +78,9 @@ export function Login() {
                 </div>
             </section>
 
-            {/* RIGHT PANEL: Auth Interactive Sheet Container */}
-            {/* md:rounded-t-[32px] creates the custom curved profile layout sheet seen in professional UI screens */}
-            <main className="flex w-full flex-col justify-center bg-white px-6 py-12 md:w-1/2 lg:px-20 xl:px-32 rounded-t-[28px] md:rounded-t-none md:rounded-l-[32px] shadow-2xl md:shadow-none">
-                <div className="mx-auto w-full max-w-md space-y-8">
+           
+            <main className="flex w-full flex-col  justify-center bg-white px-6 py-12 md:w-1/2 lg:px-20 xl:px-32 rounded-t-[28px] md:rounded-t-none md:rounded-l-[32px] shadow-2xl md:shadow-none">
+                <div className="mx-auto  w-full max-w-md space-y-8">
 
                     {/* Header Typography Group */}
                     <div className="space-y-1">
@@ -145,14 +142,15 @@ export function Login() {
                             </a>
                         </div>
 
-                        {/* Primary Action Button */}
-                        
+                       
+                        <Link  href="/questions">
                         <button
                             type="submit"
                             className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#001E2C]/90 active:scale-[0.995]"
                         >
                             Sign In
                         </button>
+                        </Link>
                     </form>
 
                     {/* Content Split Divider Line */}
