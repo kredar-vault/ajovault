@@ -12,15 +12,21 @@ export default function Home() {
   return (
     <div className="">
       <Navbar />
-      <Hero/>
-      <Aboutajo/>
-      <HowItWorks/>
-      <DashboardPreview/>
-      <FAQSection/>
-      <FinalCTA/>
-      <InfrastructureFlow/>
-      <Footer/>
-      
+      <Hero />
+       <section id="features">
+      <Aboutajo />
+      </section>
+      <section id="how-it-works">
+        <HowItWorks />
+      </section>
+      <DashboardPreview />
+      <section id="faq">
+        <FAQSection />
+      </section>
+      <FinalCTA />
+      <InfrastructureFlow />
+      <Footer />
+
     </div>
   );
 }

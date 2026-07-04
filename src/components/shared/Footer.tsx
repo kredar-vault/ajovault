@@ -17,8 +17,8 @@ export function Footer() {
             <Image
               src="/icon.svg"
               alt="Ajo Vault"
-              width={32}
-              height={32}
+              width={22}
+              height={22}
               className="brightness-0 invert" // Ensures your icon turns crisp white against the green
             />
             <span className="text-lg font-bold tracking-tight text-white">
