@@ -90,7 +90,7 @@ export function SignUp() {
             <main className="flex w-full flex-col justify-center bg-white px-4 py-12 md:w-1/2 sm:px-12 lg:px-20 xl:px-28 rounded-t-[32px] md:rounded-t-none md:rounded-l-[32px] shadow-2xl md:shadow-none">
 
                 {/* Card Box */}
-                <div className="mx-auto w-full max-w-[460px] rounded-2xl bg-white p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100/80 space-y-6">
+                <div className="mx-auto w-full max-w-[460px] rounded-[10px] bg-white p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100/80 space-y-6">
 
                     <div className="space-y-2 text-center">
                         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">

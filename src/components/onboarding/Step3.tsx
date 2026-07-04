@@ -220,7 +220,7 @@ export function Step3FinancialRules({ expectedMembers = 10, onNext, onBack }: St
           </div>
 
           {/* RIGHT SIDEBAR COLUMN: LIVE SUMMARY */}
-          <div className="bg-gradient-to-b from-white to-[#F8FAFC] border border-gray-100/70 rounded-2xl p-6 shadow-[0_10px_30px_rgba(0,0,0,0.02)] space-y-6 sticky top-6">
+          <div className="bg-gradient-to-b from-white to-[#F8FAFC] border border-gray-100/70 rounded-[10px] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.02)] space-y-6 sticky top-6">
             <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-[#006C49] uppercase">
               Live Summary
             </div>

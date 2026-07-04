@@ -3,7 +3,7 @@ import { NextPayout } from "@/types";
 
 export function NextPayoutCard({ payout }: { payout: NextPayout }) {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.01)] flex flex-col items-center justify-center text-center h-full min-h-[180px] relative overflow-hidden">
+    <div className="bg-white border border-gray-100 rounded-[10px] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.01)] flex flex-col items-center justify-center text-center h-full min-h-[180px] relative overflow-hidden">
       <div className="absolute top-0 right-0 w-32 h-32 bg-[#006C49]/5 rounded-full filter blur-xl -mr-8 -mt-8 pointer-events-none" />
       
       <span className="text-[10px] font-bold text-[#9CA3AF] tracking-wide uppercase">Next Payout</span>

@@ -15,7 +15,7 @@ export function Step5Loading() {
       </header>
 
       <div className="flex items-center justify-center pt-24 px-4">
-        <div className="w-full max-w-[520px] bg-white rounded-2xl border border-gray-100 p-12 text-center space-y-6 shadow-[0_4px_24px_rgba(0,0,0,0.005)]">
+        <div className="w-full max-w-[520px] bg-white rounded-[10px] border border-gray-100 p-12 text-center space-y-6 shadow-[0_4px_24px_rgba(0,0,0,0.005)]">
           <div className="space-y-2">
             <h1 className="text-xl sm:text-2xl font-bold text-main">Creating Your Group</h1>
             <p className="text-xs text-muted">Please hold on while we set everything up.</p>

@@ -3,7 +3,7 @@ import { CycleInfo } from "@/types";
 
 export function CycleOverviewCard({ cycle }: { cycle: CycleInfo }) {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.01)] flex flex-col justify-between h-full gap-6">
+    <div className="bg-white border border-gray-100 rounded-[10px] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.01)] flex flex-col justify-between h-full gap-6">
       <div>
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-xl sm:text-2xl font-bold text-[#111827] tracking-tight max-w-[80%] leading-tight">
@@ -22,13 +22,13 @@ export function CycleOverviewCard({ cycle }: { cycle: CycleInfo }) {
         <div>
           <span className="block text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Contribution</span>
           <div className="flex items-baseline gap-0.5 mt-1">
-            <span className="text-2xl font-black text-[#111827]">${cycle.contribution.toLocaleString()}</span>
+            <span className="text-2xl font-bold text-[#111827]">${cycle.contribution.toLocaleString()}</span>
             <span className="text-[10px] font-bold text-[#9CA3AF]">/mo</span>
           </div>
         </div>
         <div>
           <span className="block text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Total Pool</span>
-          <p className="text-2xl font-black text-[#006C49] mt-1">
+          <p className="text-2xl font-bold text-[#006C49] mt-1">
             ${cycle.totalPool.toLocaleString()}
           </p>
         </div>
