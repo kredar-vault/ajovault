@@ -3,6 +3,28 @@
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
+  
+  /* Brand Theme Colors */
+  --brand-primary: #006C49;
+  --brand-secondary: #F8FAFC;
+  
+  /* Semantic Text Colors */
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+}
+
+/* Custom Semantic Utility Helper Classes */
+@utility text-main {
+  color: var(--text-main);
+}
+@utility text-muted {
+  color: var(--text-muted);
+}
+@utility bg-brand {
+  background-color: var(--brand-primary);
+}
+@utility bg-brand-secondary {
+  background-color: var(--brand-secondary);
 }
 
 html {
@@ -23,7 +45,6 @@ body {
 *::after {
   box-sizing: border-box;
 }
-
 
 img,
 picture,

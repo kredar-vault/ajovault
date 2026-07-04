@@ -1,0 +1,158 @@
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import { Mail, MessageSquare, Link2, MessageCircle, UserPlus } from "lucide-react";
+import { Button } from "@/components/shared/Button";
+
+interface Step4Props {
+  groupName?: string;
+  expectedMembers?: number;
+  onNext: () => void;
+  onBack: () => void;
+}
+
+export function Step4InviteMembers({ 
+  groupName = "Family Vacation Fund", 
+  expectedMembers = 10, 
+  onNext, 
+  onBack 
+}: Step4Props) {
+
+  const shareOptions = [
+    {
+      id: "email",
+      title: "Email Address",
+      desc: "Send a direct invitation link",
+      icon: <Mail className="h-5 w-5 text-[#3B82F6]" />,
+      bg: "bg-[#EFF6FF]",
+    },
+    {
+      id: "phone",
+      title: "Phone Number",
+      desc: "Invite via SMS text message",
+      icon: <MessageSquare className="h-5 w-5 text-[#10B981]" />,
+      bg: "bg-[#ECFDF5]",
+    },
+    {
+      id: "link",
+      title: "Copy Link",
+      desc: "Share anywhere you want",
+      icon: <Link2 className="h-5 w-5 text-[#6366F1]" />,
+      bg: "bg-[#EEF2FF]",
+    },
+    {
+      id: "whatsapp",
+      title: "WhatsApp",
+      desc: "Send a message directly",
+      icon: <MessageCircle className="h-5 w-5 text-[#22C55E]" />,
+      bg: "bg-[#F0FDF4]",
+    },
+  ];
+
+  return (
+    <div className="w-full min-h-screen bg-brand-secondary">
+      {/* Brand Header */}
+      <header className="w-full bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Image src="/icon.svg" alt="Ajo Vault" width={22} height={22} className="text-[#006C49]" />
+          <span className="text-base font-bold tracking-tight text-main">Ajo Vault</span>
+        </div>
+      </header>
+
+      <div className="max-w-4xl mx-auto px-4 py-16">
+        {/* Main Split Layout Container */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.015)] overflow-hidden grid grid-cols-1 md:grid-cols-2">
+          
+          {/* LEFT COLUMN: ACTION OPTIONS */}
+          <div className="p-8 sm:p-12 space-y-8 flex flex-col justify-between">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-main">
+                  Invite people you trust
+                </h1>
+                <p className="text-sm text-muted leading-relaxed">
+                  Ajo is built on trust. Invite family, friends, or colleagues to join your financial rotation.
+                </p>
+              </div>
+
+              {/* Action Channels List */}
+              <div className="space-y-3">
+                {shareOptions.map((option) => (
+                  <div
+                    key={option.id}
+                    className="flex items-center gap-4 p-3.5 rounded-xl border border-gray-50 bg-gray-50/30 hover:bg-gray-50/80 cursor-pointer transition-all group"
+                  >
+                    <div className={`h-10 w-10 rounded-xl ${option.bg} flex items-center justify-center shrink-0`}>
+                      {option.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-main">{option.title}</p>
+                      <p className="text-[11px] text-muted truncate">{option.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer Form Action Navigation Controls */}
+            <div className="flex items-center gap-4 pt-6 mt-auto">
+              <Button
+                type="button"
+                variant="primary"
+                onClick={onNext}
+                className="px-6 py-2.5 font-bold"
+              >
+                Continue
+              </Button>
+              <button
+                type="button"
+                onClick={onNext}
+                className="text-xs font-bold text-muted hover:text-main transition-colors px-2"
+              >
+                I'll invite them later
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: PREVIEW CARD STACK */}
+          <div className="bg-[#E9ECF0] p-8 sm:p-12 flex items-center justify-center relative min-h-[380px] md:min-h-auto">
+            {/* Live Invitation Invitation Card component matching mockup */}
+            <div className="w-full max-w-[270px] bg-white rounded-2xl p-6 shadow-[0_12px_40px_rgba(0,0,0,0.04)] border border-white/60 text-center relative space-y-5">
+              
+              {/* Floating Profile/User Badge Icon */}
+              <div className="absolute -top-5 left-1/2 -translate-x-1/2 h-10 w-10 rounded-full bg-[#00A86B] text-white flex items-center justify-center shadow-md">
+                <UserPlus className="h-5 w-5" />
+              </div>
+
+              <div className="pt-3 space-y-1">
+                <h3 className="text-sm font-bold text-main">You're Invited!</h3>
+                <p className="text-[11px] leading-relaxed text-muted">
+                  Alex has invited you to join <span className="font-semibold text-main">"{groupName}"</span> on Ajo Vault.
+                </p>
+              </div>
+
+              {/* Internal Metadata Summary Block */}
+              <div className="bg-brand-secondary rounded-xl p-3 grid grid-cols-2 gap-2 text-left border border-gray-100">
+                <div>
+                  <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Goal</span>
+                  <span className="text-xs font-bold text-main">₦5,000</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Members</span>
+                  <span className="text-xs font-bold text-main">4 / {expectedMembers}</span>
+                </div>
+              </div>
+
+              {/* Mock Action Invitation Trigger Button */}
+              <div className="w-full bg-[#006C49] text-white py-2 rounded-lg text-xs font-semibold text-center select-none shadow-sm">
+                Join Group
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
