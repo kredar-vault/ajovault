@@ -16,7 +16,7 @@ export function SuccessModal({ isOpen, type }: SuccessModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-white backdrop-blur-sm" />
       
-      <div className="relative w-full max-w-sm transform rounded-2xl bg-white p-6 sm:p-10 transition-all border border-gray-100 text-center space-y-5">
+      <div className="relative w-full max-w-sm transform rounded-[10px] bg-white p-6 sm:p-10 transition-all border border-gray-100 text-center space-y-5">
         
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#10B981]/10 text-[#10B981]">
           <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

@@ -52,7 +52,7 @@ export function Step5Review({
         </div>
 
         {/* Information Grid Container */}
-        <main className="w-full bg-white rounded-2xl border border-gray-100 p-6 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.01)] space-y-6">
+        <main className="w-full bg-white rounded-[10px] border border-gray-100 p-6 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.01)] space-y-6">
           {/* Header Identity Row */}
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-xl bg-[#EFF6FF] flex items-center justify-center text-blue-600">

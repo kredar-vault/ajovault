@@ -73,7 +73,7 @@ export function HowItWorks() {
               className={`absolute z-10 w-[22%] space-y-3 transition-all ${item.positionClass}`}
             >
               <div className="relative">
-                <span className="pointer-events-none absolute -left-4 -top-10 select-none text-[80px] font-black text-[#169E5C]/10 xl:-top-12 xl:text-[95px]">
+                <span className="pointer-events-none absolute -left-4 -top-10 select-none text-[80px] font-bold text-[#169E5C]/10 xl:-top-12 xl:text-[95px]">
                   {item.number}
                 </span>
 

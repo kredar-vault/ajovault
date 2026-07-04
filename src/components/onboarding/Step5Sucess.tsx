@@ -32,7 +32,7 @@ export function Step5Success({ groupName, contributionAmount, frequency }: Step5
       </header>
 
       <div className="flex items-center justify-center pt-16 px-4 pb-12">
-        <div className="w-full max-w-[520px] bg-white rounded-2xl border border-gray-100 p-8 sm:p-10 text-center space-y-8 shadow-[0_6px_30px_rgba(0,0,0,0.01)]">
+        <div className="w-full max-w-[520px] bg-white rounded-[10px] border border-gray-100 p-8 sm:p-10 text-center space-y-8 shadow-[0_6px_30px_rgba(0,0,0,0.01)]">
           
           {/* Success Check Badge */}
           <div className="mx-auto h-10 w-10 rounded-full bg-[#ECFDF5] flex items-center justify-center text-[#10B981]">

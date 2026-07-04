@@ -16,7 +16,7 @@ export function MemberCard({ member }: { member: Member }) {
   };
 
   return (
-    <div className={`bg-white border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.01)] overflow-hidden relative flex flex-col justify-between p-4 ${
+    <div className={`bg-white border rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.01)] overflow-hidden relative flex flex-col justify-between p-4 ${
       member.isNextPayout ? "border-[#006C49] ring-1 ring-[#006C49]/30" : "border-gray-100"
     }`}>
       {member.isNextPayout && (

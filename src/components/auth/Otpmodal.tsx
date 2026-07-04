@@ -35,7 +35,7 @@ export function OTPModal({ isOpen, type, onClose, onVerifySuccess }: OTPModalPro
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-white backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative w-full max-w-md transform rounded-2xl bg-white p-6 sm:p-10 transition-all border border-gray-100 space-y-6">
+      <div className="relative w-full max-w-md transform rounded-[10px] bg-white p-6 sm:p-10 transition-all border border-gray-100 space-y-6">
         <div className="space-y-2 text-center">
           <h3 className="text-xl font-bold text-gray-900">
             {type === "signup" ? "Verify Your Account" : "Verify Your Identity"}
