@@ -35,7 +35,7 @@ export function ForgotPassword({ onResetSubmitted }: ForgotPasswordProps) {
         </span>
       </div>
 
-      <div className="w-full max-w-[440px] rounded-2xl bg-white p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100/80 space-y-6 relative z-10">
+      <div className="w-full max-w-[440px] rounded-[10px] bg-white p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100/80 space-y-6 relative z-10">
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">
             Forgot your password?

@@ -156,7 +156,7 @@ export function Login() {
                     {/* Content Split Divider Line */}
                     <div className="relative flex items-center py-1">
                         <div className="flex-grow border-t border-gray-100"></div>
-                        <span className="mx-4 flex-shrink text-[10px] font-black uppercase tracking-widest text-gray-300">OR</span>
+                        <span className="mx-4 flex-shrink text-[10px] font-bold uppercase tracking-widest text-gray-300">OR</span>
                         <div className="flex-grow border-t border-gray-100"></div>
                     </div>
 

@@ -5,7 +5,7 @@ export function CycleProgressCard({ stats }: { stats: ProgressStats }) {
   const percentage = (stats.currentMonth / stats.totalMonths) * 100;
 
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-5 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.01)] space-y-6 h-full">
+    <div className="bg-white border border-gray-100 rounded-[10px] p-5 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.01)] space-y-6 h-full">
       <div className="flex items-center justify-between">
         <h2 className="text-xs font-bold text-[#111827] uppercase tracking-wider">Cycle Progress</h2>
         <span className="text-[11px] font-bold text-[#4B5563]">Month {stats.currentMonth} of {stats.totalMonths}</span>

@@ -15,7 +15,7 @@ export function GrowCircleCard({ inviteUrl }: { inviteUrl: string }) {
   };
 
   return (
-    <div className="bg-[#005C42] text-white rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-full gap-4">
+    <div className="bg-[#005C42] text-white rounded-[10px] p-5 sm:p-6 flex flex-col justify-between h-full gap-4">
       <div className="space-y-2">
         <div className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center">
           <UserPlus className="h-4 w-4 text-white" />

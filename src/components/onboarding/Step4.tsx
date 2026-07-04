@@ -62,7 +62,7 @@ export function Step4InviteMembers({
 
       <div className="max-w-4xl mx-auto px-4 py-16">
         {/* Main Split Layout Container */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.015)] overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        <div className="bg-white rounded-[10px] border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.015)] overflow-hidden grid grid-cols-1 md:grid-cols-2">
           
           {/* LEFT COLUMN: ACTION OPTIONS */}
           <div className="p-8 sm:p-12 space-y-8 flex flex-col justify-between">
@@ -118,7 +118,7 @@ export function Step4InviteMembers({
           {/* RIGHT COLUMN: PREVIEW CARD STACK */}
           <div className="bg-[#E9ECF0] p-8 sm:p-12 flex items-center justify-center relative min-h-[380px] md:min-h-auto">
             {/* Live Invitation Invitation Card component matching mockup */}
-            <div className="w-full max-w-[270px] bg-white rounded-2xl p-6 shadow-[0_12px_40px_rgba(0,0,0,0.04)] border border-white/60 text-center relative space-y-5">
+            <div className="w-full max-w-[270px] bg-white rounded-[10px] p-6 shadow-[0_12px_40px_rgba(0,0,0,0.04)] border border-white/60 text-center relative space-y-5">
               
               {/* Floating Profile/User Badge Icon */}
               <div className="absolute -top-5 left-1/2 -translate-x-1/2 h-10 w-10 rounded-full bg-[#00A86B] text-white flex items-center justify-center shadow-md">

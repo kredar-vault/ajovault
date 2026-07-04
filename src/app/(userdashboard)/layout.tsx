@@ -5,7 +5,8 @@ import Link from "next/link";
 import { 
   LayoutDashboard, Users, CalendarDays, 
   Settings, Plus, ReceiptCent, FolderPlus,
-  Menu, X
+  Menu, X,
+  WalletCards
 } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -19,6 +20,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: "Contributions", href: "/contributions", icon: ReceiptCent },
     { name: "Transactions", href: "/transactions", icon: ReceiptCent },
     { name: "Payout Schedule", href: "/payouts", icon: CalendarDays },
+    { name: "Wallet & Account", href: "/wallet", icon: WalletCards },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
@@ -99,7 +101,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   );
 
   return (
-    <div className="flex min-h-screen bg-[#F9FAFB] font-sans antialiased selection:bg-[#006C49]/10 max-w-full overflow-x-hidden">
+    <div className="flex min-h-screen bg-[#FAFAFA] font-sans antialiased selection:bg-[#006C49]/10 max-w-full overflow-x-hidden">
       
       {/* 1. Green Sidebar: ONLY visible on large screens (xl) */}
       <aside className="hidden xl:flex w-[210px] bg-[#004D34] text-white flex-col justify-between fixed inset-y-0 left-0 z-20 px-4 py-6 rounded-tr-[24px]">

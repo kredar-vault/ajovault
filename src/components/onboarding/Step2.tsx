@@ -50,7 +50,7 @@ export function Step2SavingsCircle({ onNext, onBack }: Step2Props) {
       </div>
 
       {/* MAIN FORM CARD */}
-      <main className="rounded-2xl border border-gray-100 bg-white p-8 sm:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.015)]">
+      <main className="rounded-[10px] border border-gray-100 bg-white p-8 sm:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.015)]">
         <div className="space-y-2">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
             Tell us about your savings circle

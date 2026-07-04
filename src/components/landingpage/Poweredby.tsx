@@ -56,7 +56,7 @@ export function InfrastructureFlow() {
                 <button
                   key={index}
                   onClick={() => setActiveStep(index)}
-                  className={`group flex min-w-[220px] flex-1 items-center gap-4 rounded-2xl border px-5 py-4 text-left transition-all duration-300 ${
+                  className={`group flex min-w-[220px] flex-1 items-center gap-4 rounded-[10px] border px-5 py-4 text-left transition-all duration-300 ${
                     isActive
                       ? "border-[#169E5C]/20 bg-[#169E5C]/5 shadow-sm"
                       : "border-transparent hover:border-gray-200 hover:bg-gray-50"

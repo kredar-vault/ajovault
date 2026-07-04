@@ -10,7 +10,7 @@ export function ContributionCard({ item }: { item: ContributionItem }) {
   };
 
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.01)] hover:shadow-md/5 transition-all space-y-4">
+    <div className="bg-white border border-gray-100 rounded-[10px] p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.01)] hover:shadow-md/5 transition-all space-y-4">
       
       {/* Upper Segment: Avatar, Names, Currency Balance, Status Tags */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
@@ -32,7 +32,7 @@ export function ContributionCard({ item }: { item: ContributionItem }) {
 
         {/* Amount & Reference Section */}
         <div className="text-left sm:text-right flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-end gap-2 sm:gap-0.5 mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-dashed border-gray-100 sm:border-t-0">
-          <p className="text-sm font-black text-[#006C49]">
+          <p className="text-sm font-bold text-[#006C49]">
             ₦{item.amount.toLocaleString()}
           </p>
           <div className="flex items-center gap-2">

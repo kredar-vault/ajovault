@@ -11,7 +11,7 @@ export function ContributionTimelineGroup({ group }: { group: ContributionGroup 
       {/* Timeline Circle Indicator Node */}
       <div className="absolute top-2 left-0 h-4 w-4 rounded-full bg-slate-100 border-4 border-slate-300 flex items-center justify-center shadow-sm" />
 
-      <h2 className="text-[10px] font-black text-[#4B5563] uppercase tracking-widest pt-0.5">
+      <h2 className="text-[10px] font-bold text-[#4B5563] uppercase tracking-widest pt-0.5">
         {group.dateLabel}
       </h2>
 
