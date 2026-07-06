@@ -1,31 +1,66 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-// Import the new modular components
-import { OTPModal } from "@/components/auth/Otpmodal";
-import { SuccessModal } from "@/components/auth/SucessModal";
+import { useRouter } from "next/navigation";
+import { useSignup } from "@/hooks/useAuth";
+import toast from "react-hot-toast";
+import { useSession } from "@/lib/auth";
 
 export function SignUp() {
+    const router = useRouter();
+        const { refreshSession } = useSession();
+    const { mutateAsync: executeSignup, isPending: isSignupLoading } = useSignup();
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     
-    // Auth Modal State Flow Management
-    const [isOtpOpen, setIsOtpOpen] = useState(false);
-    const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        fullName: "",
+        email: "",
+        phoneNumber: "",
+        password: "",
+        confirmPassword: ""
+    });
 
-    const handleSignUpSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // 1. Trigger API Registration logic here if needed
-        // 2. Launch OTP Verification Step
-        setIsOtpOpen(true);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleOtpVerificationSuccess = () => {
-        setIsOtpOpen(false);
-        // Step into Success Step
-        setIsSuccessOpen(true);
-    };
+  const handleSignUpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+        toast.error("Passwords do not match!");
+        return;
+    }
+
+    const nameParts = formData.fullName.trim().split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "Doe";
+
+    try {
+        // 1. Fire the signup protocol
+        await executeSignup({
+            email: formData.email,
+            password: formData.password,
+            firstName,
+            lastName,
+        });
+        
+        toast.success("Account created successfully! Logging you in...");
+
+        // 2. Immediately sync the auth context state with the fresh backend session
+        await refreshSession();
+
+        // 3. Direct onward path to onboarding questions
+        router.push("/questions");
+        
+    } catch (error: any) {
+        toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
+    }
+};
 
     return (
         <div className="flex min-h-screen w-full flex-col md:flex-row bg-[#001E2C]">
@@ -108,7 +143,10 @@ export function SignUp() {
                             <label className="text-xs font-bold text-gray-700">Full Name</label>
                             <input
                                 type="text"
+                                name="fullName"
                                 required
+                                value={formData.fullName}
+                                onChange={handleChange}
                                 placeholder="John Doe"
                                 className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
                             />
@@ -119,7 +157,10 @@ export function SignUp() {
                             <label className="text-xs font-bold text-gray-700">Email Address</label>
                             <input
                                 type="email"
+                                name="email"
                                 required
+                                value={formData.email}
+                                onChange={handleChange}
                                 placeholder="john@example.com"
                                 className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
                             />
@@ -130,7 +171,10 @@ export function SignUp() {
                             <label className="text-xs font-bold text-gray-700">Phone Number</label>
                             <input
                                 type="tel"
+                                name="phoneNumber"
                                 required
+                                value={formData.phoneNumber}
+                                onChange={handleChange}
                                 placeholder="+1 (555) 000-0000"
                                 className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
                             />
@@ -142,7 +186,10 @@ export function SignUp() {
                             <div className="relative flex items-center">
                                 <input
                                     type={showPassword ? "text" : "password"}
+                                    name="password"
                                     required
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                                     className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
                                 />
@@ -162,7 +209,10 @@ export function SignUp() {
                             <div className="relative flex items-center">
                                 <input
                                     type={showConfirmPassword ? "text" : "password"}
+                                    name="confirmPassword"
                                     required
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
                                     placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                                     className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
                                 />
@@ -192,9 +242,10 @@ export function SignUp() {
                         {/* Create Account Action */}
                         <button
                             type="submit"
-                            className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#10B981]/90 active:scale-[0.995]"
+                            disabled={isSignupLoading}
+                            className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#10B981]/90 active:scale-[0.995] disabled:opacity-50"
                         >
-                            Create Account
+                            {isSignupLoading ? "Creating Account..." : "Create Account"}
                         </button>
                     </form>
 
@@ -208,19 +259,6 @@ export function SignUp() {
 
                 </div>
             </main>
-
-            {/* Verification State Modals Layer */}
-            <OTPModal 
-                isOpen={isOtpOpen} 
-                type="signup" 
-                onClose={() => setIsOtpOpen(false)} 
-                onVerifySuccess={handleOtpVerificationSuccess} 
-            />
-            
-            <SuccessModal 
-                isOpen={isSuccessOpen} 
-                type="signup" 
-            />
         </div>
     );
 }

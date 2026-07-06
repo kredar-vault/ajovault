@@ -1,23 +1,62 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Mail, MessageSquare, Link2, MessageCircle, UserPlus } from "lucide-react";
 import { Button } from "@/components/shared/Button";
+import { useGroupOnboarding } from "@/hooks/useGroupOnboardig";
 
-interface Step4Props {
+interface StepInviteMembersProps {
+  groupId: string;
   groupName?: string;
   expectedMembers?: number;
   onNext: () => void;
   onBack: () => void;
 }
 
-export function Step4InviteMembers({ 
+export function StepInviteMembers({ 
+  groupId,
   groupName = "Family Vacation Fund", 
   expectedMembers = 10, 
   onNext, 
   onBack 
-}: Step4Props) {
+}: StepInviteMembersProps) {
+  const { sendIndividualInvite, generateInviteLink } = useGroupOnboarding();
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const handleShareClick = async (id: string) => {
+    setStatusMessage(null);
+    
+    try {
+      if (id === "email") {
+        const email = prompt("Enter your friend's email address:");
+        if (!email) return;
+        await sendIndividualInvite(groupId, { type: "email", value: email });
+        setStatusMessage(`Successfully sent an invitation to ${email}!`);
+      } 
+      
+      else if (id === "phone") {
+        const phone = prompt("Enter your friend's phone number:");
+        if (!phone) return;
+        await sendIndividualInvite(groupId, { type: "phone", value: phone });
+        setStatusMessage(`Successfully sent SMS text message to ${phone}!`);
+      } 
+      
+      else if (id === "link") {
+        const sharedLink = await generateInviteLink(groupId);
+        await navigator.clipboard.writeText(sharedLink);
+        setStatusMessage("Invitation URL link copied to clipboard!");
+      } 
+      
+      else if (id === "whatsapp") {
+        const sharedLink = await generateInviteLink(groupId);
+        const textMessage = `Join our savings rotation circle "${groupName}" on Ajo Vault! Here is the invite link: ${sharedLink}`;
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textMessage)}`, "_blank");
+      }
+    } catch (err) {
+      setStatusMessage("Could not process invitation action. Please try again.");
+    }
+  };
 
   const shareOptions = [
     {
@@ -76,11 +115,19 @@ export function Step4InviteMembers({
                 </p>
               </div>
 
+              {/* Status Banner Confirmation Notice */}
+              {statusMessage && (
+                <div className="p-3 bg-[#006C49]/10 rounded-xl text-xs text-[#006C49] font-medium transition-all">
+                  {statusMessage}
+                </div>
+              )}
+
               {/* Action Channels List */}
               <div className="space-y-3">
                 {shareOptions.map((option) => (
                   <div
                     key={option.id}
+                    onClick={() => handleShareClick(option.id)}
                     className="flex items-center gap-4 p-3.5 rounded-xl border border-gray-50 bg-gray-50/30 hover:bg-gray-50/80 cursor-pointer transition-all group"
                   >
                     <div className={`h-10 w-10 rounded-xl ${option.bg} flex items-center justify-center shrink-0`}>
@@ -117,10 +164,8 @@ export function Step4InviteMembers({
 
           {/* RIGHT COLUMN: PREVIEW CARD STACK */}
           <div className="bg-[#E9ECF0] p-8 sm:p-12 flex items-center justify-center relative min-h-[380px] md:min-h-auto">
-            {/* Live Invitation Invitation Card component matching mockup */}
             <div className="w-full max-w-[270px] bg-white rounded-[10px] p-6 shadow-[0_12px_40px_rgba(0,0,0,0.04)] border border-white/60 text-center relative space-y-5">
               
-              {/* Floating Profile/User Badge Icon */}
               <div className="absolute -top-5 left-1/2 -translate-x-1/2 h-10 w-10 rounded-full bg-[#00A86B] text-white flex items-center justify-center shadow-md">
                 <UserPlus className="h-5 w-5" />
               </div>
@@ -132,7 +177,6 @@ export function Step4InviteMembers({
                 </p>
               </div>
 
-              {/* Internal Metadata Summary Block */}
               <div className="bg-brand-secondary rounded-xl p-3 grid grid-cols-2 gap-2 text-left border border-gray-100">
                 <div>
                   <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Goal</span>
@@ -144,7 +188,6 @@ export function Step4InviteMembers({
                 </div>
               </div>
 
-              {/* Mock Action Invitation Trigger Button */}
               <div className="w-full bg-[#006C49] text-white py-2 rounded-lg text-xs font-semibold text-center select-none shadow-sm">
                 Join Group
               </div>

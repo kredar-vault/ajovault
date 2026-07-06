@@ -1,21 +1,68 @@
 "use client";
 import React, { useState } from "react";
 
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-hot-toast";
+import { useResetPassword } from "@/hooks/useAuth";
+
 interface ResetPasswordProps {
   onPasswordResetComplete?: () => void;
 }
 
 export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") || ""; // Grabs authentication token from URL query string
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const resetPasswordMutation = useResetPassword();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
+    if (!token) {
+      toast.error("Invalid or missing password reset token.");
+      return;
+    }
+
+    // Inside your ResetPassword component handleSubmit:
+    resetPasswordMutation.mutate(
+      {
+        resetToken: token,       // Change 'token' key to match 'resetToken'
+        newPassword: password    // Make sure this matches your 'newPassword' property name
+      },
+      {
+        onSuccess: () => {
+          toast.success("Password updated successfully! Please sign in.");
+          if (onPasswordResetComplete) {
+            onPasswordResetComplete();
+          } else {
+            router.push("/login");
+          }
+        },
+        onError: (err: any) => {
+          toast.error(err?.response?.data?.message || "Failed to reset password.");
+        },
+      }
+    );
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-[#F8FAFC] px-4 py-12 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.05),transparent_50%)] z-0" />
       <div className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-[#19AEE8]/15 blur-[120px] z-0" />
-      
+
       <div className="w-full max-w-[440px] rounded-[10px] bg-white p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100/80 space-y-6 relative z-10">
-        
+
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">
             Reset Password
@@ -25,21 +72,18 @@ export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
           </p>
         </div>
 
-        <form 
-          className="space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (onPasswordResetComplete) onPasswordResetComplete();
-          }}
-        >
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-gray-700">New Password</label>
             <div className="relative flex items-center">
               <input
                 type={showPass ? "text" : "password"}
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
+                disabled={resetPasswordMutation.isPending}
+                className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C] disabled:opacity-60"
               />
               <button
                 type="button"
@@ -57,8 +101,11 @@ export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
               <input
                 type={showConfirm ? "text" : "password"}
                 required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
+                disabled={resetPasswordMutation.isPending}
+                className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C] disabled:opacity-60"
               />
               <button
                 type="button"
@@ -72,9 +119,10 @@ export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#006C49]/90 active:scale-[0.995]"
+            disabled={resetPasswordMutation.isPending}
+            className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#006C49]/90 active:scale-[0.995] disabled:opacity-60 disabled:pointer-events-none"
           >
-            Update Password
+            {resetPasswordMutation.isPending ? "Updating..." : "Update Password"}
           </button>
         </form>
       </div>
