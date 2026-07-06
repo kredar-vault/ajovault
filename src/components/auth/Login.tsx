@@ -3,8 +3,70 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
+import { useSession } from "@/lib/auth";
+import { useLogin, useVerifyLoginOtp } from "@/hooks/useAuth";
+
 export function Login() {
+    const router = useRouter();
+    const { refreshSession } = useSession();
+    
+    // Auth pipeline state
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [otpCode, setOtpCode] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [isOtpStep, setIsOtpStep] = useState(false);
+
+    // API Mutations
+    const loginMutation = useLogin();
+    const verifyOtpMutation = useVerifyLoginOtp();
+
+    // Step 1: Initial Login submission (triggers OTP delivery behind the scenes)
+    const handleLoginSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email || !password) {
+            toast.error("Please fill in all layout credentials.");
+            return;
+        }
+
+        loginMutation.mutate(
+            { email, password },
+            {
+                onSuccess: (response) => {
+                    toast.success("Verification code sent to your email!");
+                    setIsOtpStep(true); // Flip component view seamlessly to show OTP step
+                },
+                onError: (err: any) => {
+                    toast.error(err?.response?.data?.message || "Invalid credentials. Please try again.");
+                }
+            }
+        );
+    };
+
+    // Step 2: Verification processing code handling step
+    const handleOtpSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!otpCode || otpCode.length < 4) {
+            toast.error("Please enter a valid verification code.");
+            return;
+        }
+
+        verifyOtpMutation.mutate(
+            { email, code: otpCode },
+            {
+                onSuccess: async () => {
+                    toast.success("Signed in successfully!");
+                    await refreshSession(); // Load verified account details down into context tree
+                    router.push("/dashboard"); // Safe structural redirect layout push
+                },
+                onError: (err: any) => {
+                    toast.error(err?.response?.data?.message || "Invalid verification code.");
+                }
+            }
+        );
+    };
 
     return (
         // Base layout wrapper: uses the deep #001E2C background globally so the layout shows through smoothly
@@ -31,20 +93,6 @@ export function Login() {
 
                 {/* Main Marketing Dashboard Graphics */}
                 <div className="relative z-10 mx-auto my-auto w-full max-w-xl space-y-8 py-12">
-
-                    {/* Floating Card 1: Sarah Notification */}
-                    {/* <div className="mr-auto w-fit transform rounded-xl border border-white/10 bg-white/5 backdrop-blur-md p-4 transition-transform hover:scale-[1.02]">
-                        <div className="flex items-start gap-3">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#10B981]/20 font-bold text-[#10B981] text-sm">
-                                S
-                            </div>
-                            <div className="space-y-0.5">
-                                <p className="text-xs font-semibold text-gray-300">Sarah</p>
-                                <p className="text-sm font-bold text-[#10B981]">Contributed ₦20,000</p>
-                                <p className="text-[10px] text-gray-400">Just now &bull; Weekly Circle</p>
-                            </div>
-                        </div>
-                    </div> */}
 
                     {/* Bold Core Value Statement */}
                     <div className="space-y-4">
@@ -85,73 +133,117 @@ export function Login() {
                     {/* Header Typography Group */}
                     <div className="space-y-1">
                         <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-                            Welcome Back
+                            {isOtpStep ? "Enter Security Code" : "Welcome Back"}
                         </h2>
                         <p className="text-sm text-gray-500">
-                            Sign in to continue managing your savings circle.
+                            {isOtpStep 
+                              ? `We sent a temporary verification login code to ${email}`
+                              : "Sign in to continue managing your savings circle."}
                         </p>
                     </div>
 
-                    {/* Login Form Layout */}
-                    <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+                    {/* Login Form Layout Toggle */}
+                    {!isOtpStep ? (
+                        <form className="space-y-5" onSubmit={handleLoginSubmit}>
 
-                        {/* Input Element Field: Email */}
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Email Address</label>
-                            <div className="relative flex items-center">
-                                <input
-                                    type="email"
-                                    placeholder="name@example.com"
-                                    className="w-full rounded-lg border border-gray-200 bg-gray-50/50 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-[#001E2C] focus:bg-white focus:ring-1 focus:ring-[#001E2C]"
-                                />
+                            {/* Input Element Field: Email */}
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Email Address</label>
+                                <div className="relative flex items-center">
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="name@example.com"
+                                        required
+                                        className="w-full rounded-lg border border-gray-200 bg-gray-50/50 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-[#001E2C] focus:bg-white focus:ring-1 focus:ring-[#001E2C]"
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Input Element Field: Password */}
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Password</label>
-                            <div className="relative flex items-center">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
-                                    className="w-full rounded-lg border border-gray-200 bg-gray-50/50 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-[#001E2C] focus:bg-white focus:ring-1 focus:ring-[#001E2C]"
-                                />
+                            {/* Input Element Field: Password */}
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Password</label>
+                                <div className="relative flex items-center">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                        required
+                                        className="w-full rounded-lg border border-gray-200 bg-gray-50/50 py-3 pl-4 pr-12 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-[#001E2C] focus:bg-white focus:ring-1 focus:ring-[#001E2C]"
+                                    />
 
-                                {/* Minimalist interactive view toggler */}
+                                    {/* Minimalist interactive view toggler */}
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-gray-600 focus:outline-none select-none"
+                                    >
+                                        {showPassword ? "Hide" : "Show"}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Persistence & Safe Link Blocks */}
+                            <div className="flex items-center justify-between text-sm">
+                                <label className="flex items-center gap-2 cursor-pointer text-gray-600 select-none">
+                                    <input
+                                        type="checkbox"
+                                        className="h-4 w-4 rounded border-gray-300 text-[#10B981] focus:ring-[#10B981] accent-[#10B981]"
+                                    />
+                                    <span className="text-sm text-gray-500">Remember me</span>
+                                </label>
+                                <a href="/forgot-password" className="text-sm font-semibold text-[#10B981] hover:underline">
+                                    Forgot password?
+                                </a>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loginMutation.isPending}
+                                className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#001E2C]/90 active:scale-[0.995] disabled:opacity-60 disabled:pointer-events-none"
+                            >
+                                {loginMutation.isPending ? "Sending OTP..." : "Sign In"}
+                            </button>
+                        </form>
+                    ) : (
+                        /* Secure OTP Code Verification Step Sub-form Container */
+                        <form className="space-y-5" onSubmit={handleOtpSubmit}>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Verification Token</label>
+                                <div className="relative flex items-center">
+                                    <input
+                                        type="text"
+                                        maxLength={6}
+                                        value={otpCode}
+                                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                                        placeholder="123456"
+                                        required
+                                        className="w-full rounded-lg border border-gray-200 bg-gray-50/50 py-3 px-4 text-center text-lg font-mono tracking-[0.5em] text-gray-900 outline-none transition-all placeholder:text-gray-300 focus:border-[#001E2C] focus:bg-white focus:ring-1 focus:ring-[#001E2C]"
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={verifyOtpMutation.isPending}
+                                className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#001E2C]/90 active:scale-[0.995] disabled:opacity-60 disabled:pointer-events-none"
+                            >
+                                {verifyOtpMutation.isPending ? "Verifying..." : "Confirm Secure Login"}
+                            </button>
+
+                            <div className="text-center">
                                 <button
                                     type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-gray-600 focus:outline-none select-none"
+                                    onClick={() => setIsOtpStep(false)}
+                                    className="text-xs font-semibold text-gray-400 hover:text-gray-600 underline"
                                 >
-                                    {showPassword ? "Hide" : "Show"}
+                                    Back to login credentials
                                 </button>
                             </div>
-                        </div>
-
-                        {/* Persistence & Safe Link Blocks */}
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center gap-2 cursor-pointer text-gray-600 select-none">
-                                <input
-                                    type="checkbox"
-                                    className="h-4 w-4 rounded border-gray-300 text-[#10B981] focus:ring-[#10B981] accent-[#10B981]"
-                                />
-                                <span className="text-sm text-gray-500">Remember me</span>
-                            </label>
-                            <a href="/forgot-password" className="text-sm font-semibold text-[#10B981] hover:underline">
-                                Forgot password?
-                            </a>
-                        </div>
-
-                       
-                        <Link  href="/questions">
-                        <button
-                            type="submit"
-                            className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#001E2C]/90 active:scale-[0.995]"
-                        >
-                            Sign In
-                        </button>
-                        </Link>
-                    </form>
+                        </form>
+                    )}
 
                     {/* Content Split Divider Line */}
                     <div className="relative flex items-center py-1">
@@ -161,14 +253,14 @@ export function Login() {
                     </div>
 
                     {/* Secondary Action Link Trigger */}
-                  <Link  href="signup/">
-                    <button
-                        type="button"
-                        className="w-full rounded-lg border border-gray-200 bg-white py-3.5 text-center text-sm font-semibold text-gray-800 shadow-sm transition-colors hover:bg-gray-50/80 active:scale-[0.995]"
-                    >
-                        Create an Account
-                    </button>
-                  </Link>
+                    <Link href="/signup">
+                        <button
+                            type="button"
+                            className="w-full rounded-lg border border-gray-200 bg-white py-3.5 text-center text-sm font-semibold text-gray-800 shadow-sm transition-colors hover:bg-gray-50/80 active:scale-[0.995]"
+                        >
+                            Create an Account
+                        </button>
+                    </Link>
 
                 </div>
             </main>

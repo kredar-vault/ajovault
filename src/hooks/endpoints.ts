@@ -3,14 +3,18 @@
 // When backend base URL is ready, only http.ts needs to change (baseURL), not this file.
 
 export const ENDPOINTS = {
-  auth: {
+auth: {
     // signup OTP removed — signup is verified via email link, not OTP
+    signup: "/auth/signup",
+    login: "/auth/login",
+    verifyLoginOtp: "/auth/verify-login-otp",
+    resendLoginOtp: "/auth/resend-login-otp",
+    forgotPassword: "/auth/forgot-password", // <-- Added this route
     verifyForgotPasswordOtp: "/auth/verify-forgot-password-otp",
     resendForgotPasswordOtp: "/auth/resend-forgot-password-otp",
     resetPassword: "/auth/reset-password",
     logout: "/auth/logout",
     refreshToken: "/auth/refresh-token",
-    // TODO: add once confirmed — login, verify-login-otp, resend-login-otp
   },
 
   account: {
@@ -23,7 +27,11 @@ export const ENDPOINTS = {
     get: (groupId: string) => `/groups/${groupId}/settings`,
     update: (groupId: string) => `/groups/${groupId}/settings`,
   },
-
+GROUPS: {
+    CREATE: "/groups", // POST /groups
+    SEND_INVITE: (groupId: string) => `/groups/${groupId}/invites`, // POST /groups/{groupId}/invites
+    GET_LINK: (groupId: string) => `/groups/${groupId}/invite-link`, // POST /groups/{groupId}/invite-link
+  },
   members: {
     list: (groupId: string) => `/groups/${groupId}/members`,
     remove: (groupId: string, memberId: string) =>

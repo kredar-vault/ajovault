@@ -1,7 +1,9 @@
 "use client";
+import { useForgotPassword } from "@/hooks/useAuth";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
+import { toast } from "react-hot-toast";
 
 interface ForgotPasswordProps {
   onResetSubmitted?: () => void;
@@ -9,12 +11,30 @@ interface ForgotPasswordProps {
 
 export function ForgotPassword({ onResetSubmitted }: ForgotPasswordProps) {
   const [email, setEmail] = useState("");
+  const forgotPasswordMutation = useForgotPassword();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (onResetSubmitted) {
-      onResetSubmitted();
+    
+    if (!email) {
+      toast.error("Please enter your email address.");
+      return;
     }
+
+    forgotPasswordMutation.mutate(
+      { email },
+      {
+        onSuccess: () => {
+          toast.success("Password reset link sent to your email!");
+          if (onResetSubmitted) {
+            onResetSubmitted();
+          }
+        },
+        onError: (err: any) => {
+          toast.error(err?.response?.data?.message || "Something went wrong. Please try again.");
+        },
+      }
+    );
   };
 
   return (
@@ -54,15 +74,17 @@ export function ForgotPassword({ onResetSubmitted }: ForgotPasswordProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
+              disabled={forgotPasswordMutation.isPending}
+              className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C] disabled:opacity-60"
             />
           </div>
 
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#006C49]/90 active:scale-[0.995]"
+            disabled={forgotPasswordMutation.isPending}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#006C49]/90 active:scale-[0.995] disabled:opacity-60 disabled:pointer-events-none"
           >
-            Send Reset Link →
+            {forgotPasswordMutation.isPending ? "Sending..." : "Send Reset Link →"}
           </button>
         </form>
 

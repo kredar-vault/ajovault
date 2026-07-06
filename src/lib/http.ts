@@ -15,7 +15,7 @@ import { ENDPOINTS } from "@/hooks/endpoints";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://api.example.com";
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://api.ajovault.com";
 
 export const http = axios.create({
   baseURL: BASE_URL,

@@ -1,11 +1,5 @@
 "use client";
 
-// src/lib/auth.ts
-//
-// This is NOT where tokens live — they're in httpOnly cookies the backend
-// controls entirely. This module only tracks "am I logged in" client-side
-// state (the user object), so components can react to session changes.
-
 import {
   createContext,
   useContext,
@@ -14,11 +8,20 @@ import {
   useCallback,
   ReactNode,
 } from "react";
-import { get, post } from "../api/http";
-import { ENDPOINTS } from "../api/endpoints";
+import { get, post } from "../lib/http";
+import { ENDPOINTS } from "../hooks/endpoints";
 
-// Replace `unknown` with the real Account type once src/types/account.types.ts exists.
-type SessionUser = unknown;
+export interface SessionUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  createdAt: string;
+  preferences?: {
+    defaultCurrency: string; 
+  };
+}
 
 interface AuthContextValue {
   user: SessionUser | null;
@@ -26,6 +29,7 @@ interface AuthContextValue {
   isLoading: boolean;
   setUser: (user: SessionUser | null) => void;
   logout: () => Promise<void>;
+  refreshSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -42,11 +46,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await post(ENDPOINTS.auth.logout);
     } finally {
-      // Backend clears the httpOnly cookies as part of this call.
       clearSession();
       window.location.href = "/login";
     }
   }, [clearSession]);
+
+  const refreshSession = useCallback(async () => {
+    try {
+      const data = await get<SessionUser>(ENDPOINTS.account.root);
+      setUser(data);
+    } catch {
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   // If http.ts's interceptor detects an unrecoverable 401 (refresh failed),
   // it broadcasts this event — we react by dropping local session state.
@@ -58,15 +72,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // On mount, ask the backend whether the (httpOnly) session cookie is
   // still valid. We never inspect the cookie itself — just its effect.
   useEffect(() => {
-    get(ENDPOINTS.account.root)
-      .then((data) => setUser(data))
-      .catch(() => setUser(null))
-      .finally(() => setIsLoading(false));
-  }, []);
+    refreshSession();
+  }, [refreshSession]);
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated: !!user, isLoading, setUser, logout }}
+      value={{
+        user,
+        isAuthenticated: !!user,
+        isLoading,
+        setUser,
+        logout,
+        refreshSession,
+      }}
     >
       {children}
     </AuthContext.Provider>
