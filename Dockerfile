@@ -13,9 +13,10 @@ RUN npm ci
 FROM node:22-alpine AS builder
 WORKDIR /app
 ENV HUSKY=0 NEXT_TELEMETRY_DISABLED=1
-# API base URL, injected per environment by the CI build.
-ARG NEXT_PUBLIC_API_BASE_URL
-ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+# API base URL used server-side by the Next.js rewrite proxy.
+# NOT a NEXT_PUBLIC_ var — it must never be baked into the client bundle.
+ARG API_BASE_URL
+ENV API_BASE_URL=$API_BASE_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build

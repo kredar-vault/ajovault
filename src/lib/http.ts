@@ -15,7 +15,9 @@ import { ENDPOINTS } from "@/hooks/endpoints";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://api.ajovault.com";
+// Always use the Next.js rewrite proxy — requests stay same-origin so CORS
+// never applies. The rewrite in next.config.ts forwards /api/* → upstream.
+const BASE_URL = "/api/v1";
 
 export const http = axios.create({
   baseURL: BASE_URL,

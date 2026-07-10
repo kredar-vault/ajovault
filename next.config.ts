@@ -1,14 +1,21 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
-  // Emit a self-contained server bundle for the Docker runtime image.
   output: "standalone",
-  // Don't fail the production build on pre-existing type/lint errors (matches the
-  // kredar/xental frontends). Re-enable once the app compiles clean.
   typescript: { ignoreBuildErrors: true },
   eslint: { ignoreDuringBuilds: true },
+
+  async rewrites() {
+    const upstream =
+      process.env.API_BASE_URL ?? "https://api.vault.staging.kredar.xyz";
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${upstream}/api/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

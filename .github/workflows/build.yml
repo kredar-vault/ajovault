@@ -43,9 +43,9 @@ jobs:
         with:
           context: .
           push: true
-          # NEXT_PUBLIC_* is baked into the client bundle at build time.
+          # Server-side only — never baked into the client bundle.
           build-args: |
-            NEXT_PUBLIC_API_BASE_URL=${{ steps.env.outputs.api }}
+            API_BASE_URL=${{ steps.env.outputs.api }}
           tags: |
             ${{ env.IMAGE }}:sha-${{ github.sha }}
             ${{ env.IMAGE }}:${{ steps.env.outputs.moving }}
