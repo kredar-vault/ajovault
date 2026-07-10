@@ -19,12 +19,37 @@ import axios, { AxiosError, AxiosRequestConfig } from "axios";
 // never applies. The rewrite in next.config.ts forwards /api/* → upstream.
 const BASE_URL = "/api/v1";
 
+const TOKEN_KEY = "ajovault_token";
+
+export const setToken = (token: string) => {
+  if (typeof window !== "undefined") sessionStorage.setItem(TOKEN_KEY, token);
+};
+
+export const clearToken = () => {
+  if (typeof window !== "undefined") sessionStorage.removeItem(TOKEN_KEY);
+};
+
+const getToken = () => {
+  if (typeof window === "undefined") return null;
+  return sessionStorage.getItem(TOKEN_KEY);
+};
+
 export const http = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // sends/receives httpOnly cookies
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
+});
+
+// Attach Bearer token to every request
+http.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 // ---- refresh-token-on-401 flow ----

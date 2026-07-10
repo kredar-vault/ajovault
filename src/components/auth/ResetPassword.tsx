@@ -12,7 +12,7 @@ interface ResetPasswordProps {
 export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") || ""; // Grabs authentication token from URL query string
+  const email = searchParams.get("email") || "";
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -29,16 +29,16 @@ export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
       return;
     }
 
-    if (!token) {
-      toast.error("Invalid or missing password reset token.");
+    if (!email) {
+      toast.error("Missing email. Please restart the password reset flow.");
       return;
     }
 
-    // Inside your ResetPassword component handleSubmit:
     resetPasswordMutation.mutate(
       {
-        resetToken: token,       // Change 'token' key to match 'resetToken'
-        newPassword: password    // Make sure this matches your 'newPassword' property name
+        email,
+        newPassword: password,
+        confirmPassword,
       },
       {
         onSuccess: () => {

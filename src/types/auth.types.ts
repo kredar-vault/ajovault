@@ -1,89 +1,72 @@
 // src/types/auth.types.ts
 
-// --- Signup ---
-export interface SignupRequest {
-  email: string;
-  password?: string;
-  firstName?: string;
-  lastName?: string;
+// Backend wraps every response in ApiResponse<T>
+export interface ApiResult<T> {
+  isSuccess: boolean;
+  message: string;
+  data: T;
 }
 
-export interface SignupResponse {
-  message: string;
+// Token + user data returned after verify-otp and login
+export interface AuthData {
+  token: string;
   userId: string;
+  fullName: string;
+  email: string;
 }
+
+// --- Signup ---
+export interface SignupRequest {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface SignupData {
+  userId: string;
+  email: string;
+  message: string;
+}
+
+export type SignupResponse = ApiResult<SignupData>;
+
+// --- OTP Verification (after signup) ---
+export interface VerifyOtpRequest {
+  email: string;
+  otp: string;
+}
+
+export type VerifyOtpResponse = ApiResult<AuthData>;
+
+export interface ResendOtpRequest {
+  email: string;
+}
+
+export type ResendOtpResponse = ApiResult<object>;
 
 // --- Login ---
 export interface LoginRequest {
   email: string;
-  password?: string;
+  password: string;
 }
 
-export interface LoginResponse {
-  message: string;
-  requiresOtp: boolean;
-}
-
-// --- OTP Verification ---
-export interface VerifyLoginOtpRequest {
-  email: string;
-  code: string;
-}
-
-export interface VerifyLoginOtpResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: {
-    id: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-  };
-}
-
-export interface ResendLoginOtpRequest {
-  email: string;
-}
-
-export interface ResendLoginOtpResponse {
-  message: string;
-}
+export type LoginResponse = ApiResult<AuthData>;
 
 // --- Forgot & Reset Password ---
 export interface ForgotPasswordRequest {
   email: string;
 }
 
-export interface ForgotPasswordResponse {
-  message: string;
-}
-
-export interface VerifyForgotPasswordOtpRequest {
-  email: string;
-  otp: string;
-}
-
-export interface VerifyForgotPasswordOtpResponse {
-  resetToken: string;
-}
-
-export interface ResendForgotPasswordOtpRequest {
-  email: string;
-}
-
-export interface ResendForgotPasswordOtpResponse {
-  message: string;
-}
+export type ForgotPasswordResponse = ApiResult<object>;
 
 export interface ResetPasswordRequest {
-  resetToken: string;
+  email: string;
   newPassword: string;
+  confirmPassword: string;
 }
 
-export interface ResetPasswordResponse {
-  message: string;
-}
+export type ResetPasswordResponse = ApiResult<object>;
 
-export interface LogoutResponse {
-  message: string;
-}
+export type LogoutResponse = ApiResult<object>;

@@ -6,16 +6,14 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSignup } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
-import { useSession } from "@/lib/auth";
 
 export function SignUp() {
     const router = useRouter();
-        const { refreshSession } = useSession();
     const { mutateAsync: executeSignup, isPending: isSignupLoading } = useSignup();
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    
+
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
@@ -36,27 +34,17 @@ export function SignUp() {
         return;
     }
 
-    const nameParts = formData.fullName.trim().split(" ");
-    const firstName = nameParts[0] || "";
-    const lastName = nameParts.slice(1).join(" ") || "Doe";
-
     try {
-        // 1. Fire the signup protocol
         await executeSignup({
+            fullName: formData.fullName,
             email: formData.email,
+            phoneNumber: formData.phoneNumber,
             password: formData.password,
-            firstName,
-            lastName,
+            confirmPassword: formData.confirmPassword,
         });
-        
-        toast.success("Account created successfully! Logging you in...");
 
-        // 2. Immediately sync the auth context state with the fresh backend session
-        await refreshSession();
-
-        // 3. Direct onward path to onboarding questions
-        router.push("/questions");
-        
+        toast.success("Check your email for a verification code.");
+        router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
     } catch (error: any) {
         toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
     }

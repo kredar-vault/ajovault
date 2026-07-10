@@ -6,64 +6,38 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useSession } from "@/lib/auth";
-import { useLogin, useVerifyLoginOtp } from "@/hooks/useAuth";
+import { useLogin } from "@/hooks/useAuth";
+import { setToken } from "@/lib/http";
 
 export function Login() {
     const router = useRouter();
     const { refreshSession } = useSession();
     
-    // Auth pipeline state
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [otpCode, setOtpCode] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [isOtpStep, setIsOtpStep] = useState(false);
 
-    // API Mutations
     const loginMutation = useLogin();
-    const verifyOtpMutation = useVerifyLoginOtp();
 
-    // Step 1: Initial Login submission (triggers OTP delivery behind the scenes)
     const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!email || !password) {
-            toast.error("Please fill in all layout credentials.");
+            toast.error("Please fill in all credentials.");
             return;
         }
 
         loginMutation.mutate(
             { email, password },
             {
-                onSuccess: (response) => {
-                    toast.success("Verification code sent to your email!");
-                    setIsOtpStep(true); // Flip component view seamlessly to show OTP step
+                onSuccess: async (response) => {
+                    setToken(response.data.token);
+                    toast.success("Signed in successfully!");
+                    await refreshSession();
+                    router.push("/dashboard");
                 },
                 onError: (err: any) => {
                     toast.error(err?.response?.data?.message || "Invalid credentials. Please try again.");
-                }
-            }
-        );
-    };
-
-    // Step 2: Verification processing code handling step
-    const handleOtpSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!otpCode || otpCode.length < 4) {
-            toast.error("Please enter a valid verification code.");
-            return;
-        }
-
-        verifyOtpMutation.mutate(
-            { email, code: otpCode },
-            {
-                onSuccess: async () => {
-                    toast.success("Signed in successfully!");
-                    await refreshSession(); // Load verified account details down into context tree
-                    router.push("/dashboard"); // Safe structural redirect layout push
                 },
-                onError: (err: any) => {
-                    toast.error(err?.response?.data?.message || "Invalid verification code.");
-                }
             }
         );
     };
@@ -133,18 +107,14 @@ export function Login() {
                     {/* Header Typography Group */}
                     <div className="space-y-1">
                         <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-                            {isOtpStep ? "Enter Security Code" : "Welcome Back"}
+                            Welcome Back
                         </h2>
                         <p className="text-sm text-gray-500">
-                            {isOtpStep 
-                              ? `We sent a temporary verification login code to ${email}`
-                              : "Sign in to continue managing your savings circle."}
+                            Sign in to continue managing your savings circle.
                         </p>
                     </div>
 
-                    {/* Login Form Layout Toggle */}
-                    {!isOtpStep ? (
-                        <form className="space-y-5" onSubmit={handleLoginSubmit}>
+                    <form className="space-y-5" onSubmit={handleLoginSubmit}>
 
                             {/* Input Element Field: Email */}
                             <div className="space-y-1.5">
@@ -204,46 +174,9 @@ export function Login() {
                                 disabled={loginMutation.isPending}
                                 className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#001E2C]/90 active:scale-[0.995] disabled:opacity-60 disabled:pointer-events-none"
                             >
-                                {loginMutation.isPending ? "Sending OTP..." : "Sign In"}
+                                {loginMutation.isPending ? "Signing in..." : "Sign In"}
                             </button>
                         </form>
-                    ) : (
-                        /* Secure OTP Code Verification Step Sub-form Container */
-                        <form className="space-y-5" onSubmit={handleOtpSubmit}>
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Verification Token</label>
-                                <div className="relative flex items-center">
-                                    <input
-                                        type="text"
-                                        maxLength={6}
-                                        value={otpCode}
-                                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
-                                        placeholder="123456"
-                                        required
-                                        className="w-full rounded-lg border border-gray-200 bg-gray-50/50 py-3 px-4 text-center text-lg font-mono tracking-[0.5em] text-gray-900 outline-none transition-all placeholder:text-gray-300 focus:border-[#001E2C] focus:bg-white focus:ring-1 focus:ring-[#001E2C]"
-                                    />
-                                </div>
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={verifyOtpMutation.isPending}
-                                className="w-full rounded-lg bg-[#006C49] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#001E2C]/90 active:scale-[0.995] disabled:opacity-60 disabled:pointer-events-none"
-                            >
-                                {verifyOtpMutation.isPending ? "Verifying..." : "Confirm Secure Login"}
-                            </button>
-
-                            <div className="text-center">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsOtpStep(false)}
-                                    className="text-xs font-semibold text-gray-400 hover:text-gray-600 underline"
-                                >
-                                    Back to login credentials
-                                </button>
-                            </div>
-                        </form>
-                    )}
 
                     {/* Content Split Divider Line */}
                     <div className="relative flex items-center py-1">

@@ -12,14 +12,16 @@ import { get, post } from "../lib/http";
 import { ENDPOINTS } from "../hooks/endpoints";
 
 export interface SessionUser {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber?: string;
-  createdAt: string;
-  preferences?: {
-    defaultCurrency: string; 
+  userId: string;
+  fullName: string;
+  email?: string;
+  accountNumber: string;
+  maskedAccountNumber: string;
+  balance: number;
+  monthlySummary: {
+    totalIn: number;
+    totalOut: number;
+    points: Array<{ month: string; in: number; out: number }>;
   };
 }
 

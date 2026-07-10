@@ -7,18 +7,14 @@ import { ENDPOINTS } from "../hooks/endpoints";
 import type {
   SignupRequest,
   SignupResponse,
+  VerifyOtpRequest,
+  VerifyOtpResponse,
+  ResendOtpRequest,
+  ResendOtpResponse,
   LoginRequest,
   LoginResponse,
-  VerifyLoginOtpRequest,
-  VerifyLoginOtpResponse,
-  ResendLoginOtpRequest,
-  ResendLoginOtpResponse,
-  ForgotPasswordRequest,        // <-- Added this payload type
-  ForgotPasswordResponse,       // <-- Added this response type
-  VerifyForgotPasswordOtpRequest,
-  VerifyForgotPasswordOtpResponse,
-  ResendForgotPasswordOtpRequest,
-  ResendForgotPasswordOtpResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
   LogoutResponse,
@@ -31,6 +27,20 @@ export function useSignup() {
   });
 }
 
+export function useVerifyOtp() {
+  return useMutation({
+    mutationFn: (body: VerifyOtpRequest) =>
+      post<VerifyOtpResponse, VerifyOtpRequest>(ENDPOINTS.auth.verifyOtp, body),
+  });
+}
+
+export function useResendOtp() {
+  return useMutation({
+    mutationFn: (body: ResendOtpRequest) =>
+      post<ResendOtpResponse, ResendOtpRequest>(ENDPOINTS.auth.resendOtp, body),
+  });
+}
+
 export function useLogin() {
   return useMutation({
     mutationFn: (body: LoginRequest) =>
@@ -38,41 +48,10 @@ export function useLogin() {
   });
 }
 
-export function useVerifyLoginOtp() {
-  return useMutation({
-    mutationFn: (body: VerifyLoginOtpRequest) =>
-      post<VerifyLoginOtpResponse, VerifyLoginOtpRequest>(ENDPOINTS.auth.verifyLoginOtp, body),
-  });
-}
-
-export function useResendLoginOtp() {
-  return useMutation({
-    mutationFn: (body: ResendLoginOtpRequest) =>
-      post<ResendLoginOtpResponse, ResendLoginOtpRequest>(ENDPOINTS.auth.resendLoginOtp, body),
-  });
-}
-
-/**
- * Sends the email to the backend to trigger/generate the password reset OTP code
- */
 export function useForgotPassword() {
   return useMutation({
     mutationFn: (body: ForgotPasswordRequest) =>
       post<ForgotPasswordResponse, ForgotPasswordRequest>(ENDPOINTS.auth.forgotPassword, body),
-  });
-}
-
-export function useVerifyForgotPasswordOtp() {
-  return useMutation({
-    mutationFn: (body: VerifyForgotPasswordOtpRequest) =>
-      post<VerifyForgotPasswordOtpResponse, VerifyForgotPasswordOtpRequest>(ENDPOINTS.auth.verifyForgotPasswordOtp, body),
-  });
-}
-
-export function useResendForgotPasswordOtp() {
-  return useMutation({
-    mutationFn: (body: ResendForgotPasswordOtpRequest) =>
-      post<ResendForgotPasswordOtpResponse, ResendForgotPasswordOtpRequest>(ENDPOINTS.auth.resendForgotPasswordOtp, body),
   });
 }
 

@@ -4,14 +4,11 @@
 
 export const ENDPOINTS = {
 auth: {
-    // signup OTP removed — signup is verified via email link, not OTP
-    signup: "/auth/signup",
+    signup: "/auth/register",
+    verifyOtp: "/auth/verify-otp",
+    resendOtp: "/auth/resend-otp",
     login: "/auth/login",
-    verifyLoginOtp: "/auth/verify-login-otp",
-    resendLoginOtp: "/auth/resend-login-otp",
-    forgotPassword: "/auth/forgot-password", // <-- Added this route
-    verifyForgotPasswordOtp: "/auth/verify-forgot-password-otp",
-    resendForgotPasswordOtp: "/auth/resend-forgot-password-otp",
+    forgotPassword: "/auth/forgot-password",
     resetPassword: "/auth/reset-password",
     logout: "/auth/logout",
     refreshToken: "/auth/refresh-token",
