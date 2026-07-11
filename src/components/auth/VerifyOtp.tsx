@@ -7,12 +7,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useVerifyOtp, useResendOtp } from "@/hooks/useAuth";
 import { setToken } from "@/lib/http";
 import { useSession } from "@/lib/auth";
+import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 export function VerifyOtp() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { refreshSession } = useSession();
+    const queryClient = useQueryClient();
 
     const email = searchParams.get("email") ?? "";
     const [otp, setOtp] = useState("");
@@ -43,6 +45,7 @@ export function VerifyOtp() {
             {
                 onSuccess: async (response) => {
                     setToken(response.data.token);
+                    queryClient.clear();
                     toast.success("Email verified! Welcome to AjoVault.");
                     await refreshSession();
                     router.push("/dashboard");

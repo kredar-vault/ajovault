@@ -7,10 +7,12 @@ import { toast } from "react-hot-toast";
 import { useSession } from "@/lib/auth";
 import { useLogin, useVerifyLoginOtp, useResendLoginOtp } from "@/hooks/useAuth";
 import { setToken } from "@/lib/http";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function LoginForm() {
   const router = useRouter();
   const { refreshSession } = useSession();
+  const queryClient = useQueryClient();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -57,6 +59,7 @@ export function LoginForm() {
       {
         onSuccess: async (response) => {
           setToken(response.data.token);
+          queryClient.clear();
           toast.success("Signed in successfully!");
           await refreshSession();
           router.push("/dashboard");
