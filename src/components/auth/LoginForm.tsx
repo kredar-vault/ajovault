@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 import { useSession } from "@/lib/auth";
 import { useLogin } from "@/hooks/useAuth";
 import { setToken } from "@/lib/http";
@@ -42,7 +43,14 @@ export function LoginForm() {
   };
 
   return (
-    <div className="space-y-8 w-full">
+    <>
+      {loginMutation.isPending && (
+        <div className="fixed inset-0 bg-[#001E2C]/90 backdrop-blur-md z-50 flex flex-col items-center justify-center text-white">
+          <Loader2 className="h-10 w-10 text-[#006C49] animate-spin" />
+          <p className="mt-4 text-xs font-semibold text-gray-400 uppercase tracking-widest animate-pulse">Signing in, please wait...</p>
+        </div>
+      )}
+      <div className="space-y-8 w-full">
       <form className="space-y-5" onSubmit={handleLoginSubmit}>
         
         {/* Input Element Field: Email */}
@@ -123,5 +131,6 @@ export function LoginForm() {
         </button>
       </Link>
     </div>
+    </>
   );
 }

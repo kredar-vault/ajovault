@@ -29,6 +29,7 @@ interface AuthContextValue {
   user: SessionUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isLoggingOut: boolean;
   setUser: (user: SessionUser | null) => void;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
@@ -39,16 +40,19 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const clearSession = useCallback(() => {
     setUser(null);
   }, []);
 
   const logout = useCallback(async () => {
+    setIsLoggingOut(true);
     try {
       await post(ENDPOINTS.auth.logout);
     } finally {
       clearSession();
+      setIsLoggingOut(false);
       window.location.href = "/login";
     }
   }, [clearSession]);
@@ -83,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isAuthenticated: !!user,
         isLoading,
+        isLoggingOut,
         setUser,
         logout,
         refreshSession,

@@ -45,6 +45,7 @@ export function SignUp() {
                   src="/sarah.jpg"
                   alt="Sarah Jenkins"
                   fill
+                  sizes="40px"
                   className="object-cover"
                 />
               </div>

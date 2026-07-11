@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect, createContext, useContext } from "react";
 import Link from "next/link";
+import { useSession } from "@/lib/auth";
 import { useMyGroups } from "@/hooks/useGroups";
 import { NotificationBell } from "@/components/userdashboard/NotificationBell";
 import {
   LayoutDashboard, Users, CalendarDays,
   Settings, Plus, ReceiptCent, FolderPlus,
   Menu, X,
-  WalletCards
+  WalletCards, Loader2, LogOut
 } from "lucide-react";
 
 interface CircleContextType {
@@ -30,9 +31,11 @@ export function useCircle() {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: myGroups, isLoading } = useMyGroups();
+  const { logout, isLoggingOut } = useSession();
   const [currentCircleId, setCurrentCircleId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("Dashboard");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
 
   const globalNavItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -97,10 +100,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <Link href="/questions" className="w-full py-2 bg-[#006C49] hover:bg-[#005439] text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 border border-white/5">
           <Plus className="h-3.5 w-3.5" /> Action
         </Link>
-        <div className="pt-4 border-t border-white/10">
+        <div className="pt-4 border-t border-white/10 space-y-2">
           <Link href="/questions" className="w-full py-2 bg-white/10 hover:bg-white/15 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all">
             <FolderPlus className="h-3.5 w-3.5 text-[#A3E635]" /> New Circle
           </Link>
+          <button
+            onClick={() => setIsConfirmingLogout(true)}
+            className="w-full py-2 bg-red-950/30 hover:bg-red-900/40 text-red-200 hover:text-white border border-red-500/20 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+          >
+            <LogOut className="h-3.5 w-3.5 text-red-400" /> Logout
+          </button>
         </div>
       </div>
     </>
@@ -133,16 +142,53 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <CircleContext.Provider value={{ currentCircleId, setCurrentCircleId, userCircles, isLoading }}>
+      {isConfirmingLogout && (
+        <div className="fixed inset-0 bg-[#001E2C]/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-sm bg-white rounded-xl border border-gray-100 p-6 shadow-2xl space-y-5 text-left animate-scale-up">
+            <div className="space-y-2">
+              <h3 className="text-base font-bold text-[#1E293B] tracking-tight">Confirm Sign Out</h3>
+              <p className="text-xs text-[#64748B] leading-relaxed">
+                Are you sure you want to end your current session? You will need to enter your email and password to access your vaults again.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsConfirmingLogout(false)}
+                className="flex-1 py-2.5 bg-gray-50 border border-gray-200 hover:bg-gray-100 text-[#374151] rounded-lg text-xs font-semibold transition-all cursor-pointer text-center"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setIsConfirmingLogout(false);
+                  logout();
+                }}
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-all cursor-pointer text-center"
+              >
+                Yes, Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isLoggingOut && (
+        <div className="fixed inset-0 bg-[#001E2C]/90 backdrop-blur-md z-50 flex flex-col items-center justify-center text-white">
+          <Loader2 className="h-10 w-10 text-red-500 animate-spin" />
+          <p className="mt-4 text-xs font-semibold text-gray-400 uppercase tracking-widest animate-pulse">Logging out, please wait...</p>
+        </div>
+      )}
+
       <div className="flex min-h-screen bg-[#FAFAFA] font-sans antialiased selection:bg-[#006C49]/10 max-w-full overflow-x-hidden">
 
-        {/* 1. Green Sidebar: ONLY visible on large screens (xl) */}
-        <aside className="hidden xl:flex w-[210px] bg-[#004D34] text-white flex-col justify-between fixed inset-y-0 left-0 z-20 px-4 py-6 rounded-tr-[24px]">
+        {/* 1. Green Sidebar: Visible on desktop screens (lg) */}
+        <aside className="hidden lg:flex w-[210px] bg-[#004D34] text-white flex-col justify-between fixed inset-y-0 left-0 z-20 px-4 py-6 rounded-tr-[24px]">
           <GreenSidebarContent />
         </aside>
 
-        {/* 2. White Sidebar: Visible on xl (pushed right) and visible on lg (snapped to left) */}
-        <aside className="hidden lg:flex w-[220px] border-r border-gray-100 bg-white flex-col fixed inset-y-0 left-0 xl:left-[210px] z-10 px-3 py-6 pt-6 xl:pt-14">
-          <div className="hidden xl:block h-6 mb-4" /> {/* Spacer for design alignment on xl desktop */}
+        {/* 2. White Sidebar: Visible on lg (pushed right) */}
+        <aside className="hidden lg:flex w-[220px] border-r border-gray-100 bg-white flex-col fixed inset-y-0 left-[210px] z-10 px-3 py-6 pt-14">
+          <div className="hidden lg:block h-6 mb-4" /> {/* Spacer for design alignment on desktop */}
           <WhiteNavigationContent />
         </aside>
 
@@ -171,7 +217,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* 5. Main Screen Area: dynamic padding based on sidebar visibility states */}
-        <div className="flex-1 w-full min-w-0 pt-14 lg:pt-0 pl-0 lg:pl-[220px] xl:pl-[430px] transition-all duration-200">
+        <div className="flex-1 w-full min-w-0 pt-14 lg:pt-0 pl-0 lg:pl-[430px] transition-all duration-200">
 
           {/* Desktop Top Header Bar */}
           <header className="hidden lg:flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 sticky top-0 z-10">
@@ -183,9 +229,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             <div className="flex items-center gap-4">
               <NotificationBell />
-              <div className="h-8 w-8 rounded-full bg-[#006C49] text-white flex items-center justify-center font-bold text-xs select-none shadow-sm">
-                U
-              </div>
             </div>
           </header>
 
