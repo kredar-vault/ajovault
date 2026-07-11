@@ -1,17 +1,22 @@
-// @/hooks/useGroupOnboarding.ts
+// src/hooks/useGroupOnboarding.ts
 import { useState } from "react";
 import { http } from "@/lib/http";
+import { ENDPOINTS } from "./endpoints";
+
+import type { ApiResult } from "../types";
 
 // Localized Types for full reliability
 export type GroupFrequency = "weekly" | "bi-weekly" | "monthly";
 
 export interface CreateGroupPayload {
-  groupName: string;
+  name: string;
   purpose: string;
-  expectedMembers: number;
+  maxMembers: number;
   frequency: GroupFrequency;
   contributionAmount: number;
   firstPayoutRecipient: string;
+  contactEmail: string;
+  contactPhone: string;
 }
 
 export interface CreateGroupResponse {
@@ -37,10 +42,32 @@ export function useGroupOnboarding() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await http.post<CreateGroupResponse>("/groups", payload);
-      return response.data;
+      const response = await http.post<ApiResult<CreateGroupResponse>>(ENDPOINTS.groups.root, payload);
+      return response.data.data;
     } catch (err: any) {
-      const msg = err?.response?.data?.message || "Failed to create savings group.";
+      const responseData = err?.response?.data;
+      let msg = "Failed to create savings group.";
+      if (responseData) {
+        if (responseData.errors && typeof responseData.errors === "object") {
+          const errList: string[] = [];
+          for (const key in responseData.errors) {
+            if (Array.isArray(responseData.errors[key])) {
+              errList.push(`${key}: ${responseData.errors[key].join(", ")}`);
+            } else {
+              errList.push(`${key}: ${responseData.errors[key]}`);
+            }
+          }
+          msg = errList.join("; ");
+        } else if (typeof responseData.message === "string") {
+          msg = responseData.message;
+        } else if (Array.isArray(responseData.message)) {
+          msg = responseData.message.join(", ");
+        } else if (typeof responseData.error === "string") {
+          msg = responseData.error;
+        } else if (responseData.message) {
+          msg = JSON.stringify(responseData.message);
+        }
+      }
       setError(msg);
       throw err;
     } finally {
@@ -48,11 +75,11 @@ export function useGroupOnboarding() {
     }
   };
 
-  // POST /groups/{groupId}/invites
+  // POST /groups/{groupId}/invite
   const sendIndividualInvite = async (groupId: string, payload: SendInvitePayload): Promise<void> => {
     setError(null);
     try {
-      await http.post(`/groups/${groupId}/invites`, payload);
+      await http.post<ApiResult<void>>(ENDPOINTS.groups.invite(groupId), payload);
     } catch (err: any) {
       const msg = err?.response?.data?.message || `Failed to send ${payload.type} invitation.`;
       setError(msg);
@@ -60,12 +87,12 @@ export function useGroupOnboarding() {
     }
   };
 
-  // POST /groups/{groupId}/invite-link
+  // GET /groups/{groupId}/invite
   const generateInviteLink = async (groupId: string): Promise<string> => {
     setError(null);
     try {
-      const response = await http.post<InviteLinkResponse>(`/groups/${groupId}/invite-link`);
-      return response.data.link;
+      const response = await http.get<ApiResult<InviteLinkResponse>>(ENDPOINTS.groups.invite(groupId));
+      return response.data.data.link;
     } catch (err: any) {
       const msg = err?.response?.data?.message || "Failed to generate your invite shortcut link.";
       setError(msg);

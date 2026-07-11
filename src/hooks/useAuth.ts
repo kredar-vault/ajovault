@@ -48,6 +48,9 @@ export function useLogin() {
   });
 }
 
+/**
+ * Sends the email to the backend to trigger/generate the password reset link
+ */
 export function useForgotPassword() {
   return useMutation({
     mutationFn: (body: ForgotPasswordRequest) =>
@@ -55,10 +58,12 @@ export function useForgotPassword() {
   });
 }
 
-export function useResetPassword() {
+export function useResetPassword(token?: string) {
   return useMutation({
-    mutationFn: (body: ResetPasswordRequest) =>
-      post<ResetPasswordResponse, ResetPasswordRequest>(ENDPOINTS.auth.resetPassword, body),
+    mutationFn: (body: ResetPasswordRequest) => {
+      const url = token ? `${ENDPOINTS.auth.resetPassword}?token=${token}&resetToken=${token}` : ENDPOINTS.auth.resetPassword;
+      return post<ResetPasswordResponse, ResetPasswordRequest>(url, body);
+    },
   });
 }
 

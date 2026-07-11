@@ -7,22 +7,29 @@ import { useResetPassword } from "@/hooks/useAuth";
 
 interface ResetPasswordProps {
   onPasswordResetComplete?: () => void;
+  tokenProp?: string;
 }
 
-export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
+export function ResetPassword({ onPasswordResetComplete, tokenProp }: ResetPasswordProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get("email") || "";
+  const token = tokenProp || searchParams.get("token") || ""; // Grabs authentication token from prop or URL query string
 
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const resetPasswordMutation = useResetPassword();
+  const resetPasswordMutation = useResetPassword(token);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!email) {
+      toast.error("Please enter your email address.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match!");
@@ -73,6 +80,19 @@ export function ResetPassword({ onPasswordResetComplete }: ResetPasswordProps) {
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-gray-700">Email Address</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+              disabled={resetPasswordMutation.isPending}
+              className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C] disabled:opacity-60"
+            />
+          </div>
+
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-gray-700">New Password</label>
             <div className="relative flex items-center">

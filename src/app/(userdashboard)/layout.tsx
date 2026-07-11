@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import Link from "next/link";
+import { useMyGroups } from "@/hooks/useGroups";
+import { NotificationBell } from "@/components/userdashboard/NotificationBell";
 import { 
   LayoutDashboard, Users, CalendarDays, 
   Settings, Plus, ReceiptCent, FolderPlus,
@@ -9,8 +11,26 @@ import {
   WalletCards
 } from "lucide-react";
 
+interface CircleContextType {
+  currentCircleId: string | null;
+  setCurrentCircleId: (id: string | null) => void;
+  userCircles: Array<{ id: string; name: string; type: string }>;
+  isLoading: boolean;
+}
+
+const CircleContext = createContext<CircleContextType | undefined>(undefined);
+
+export function useCircle() {
+  const context = useContext(CircleContext);
+  if (!context) {
+    throw new Error("useCircle must be used within a CircleProvider");
+  }
+  return context;
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [currentCircleId, setCurrentCircleId] = useState("family-savings");
+  const { data: myGroups, isLoading } = useMyGroups();
+  const [currentCircleId, setCurrentCircleId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("Dashboard");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -24,11 +44,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
-  const userCircles = [
-    { id: "family-savings", name: "Family Savings", type: "Personal" },
-    { id: "office-ajo", name: "Office Ajo", type: "Workplace" },
-    { id: "rent-circle", name: "Rent Circle", type: "Targeted" },
-  ];
+  const userCircles = myGroups?.map((circle) => ({
+    id: circle.id,
+    name: circle.name,
+    type: circle.purpose || "Savings Circle",
+  })) || [];
+
+  // Set the first circle as active by default once loaded
+  useEffect(() => {
+    if (userCircles.length > 0 && !currentCircleId) {
+      setCurrentCircleId(userCircles[0].id);
+    }
+  }, [myGroups, currentCircleId, userCircles]);
 
   const GreenSidebarContent = () => (
     <>
@@ -40,35 +67,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <p className="text-[10px] text-white/50 font-medium mt-0.5">Financial Rotations</p>
         </div>
         <div className="space-y-1">
-          {userCircles.map((circle) => {
-            const isSelected = currentCircleId === circle.id;
-            return (
-              <button
-                key={circle.id}
-                onClick={() => setCurrentCircleId(circle.id)}
-                className={`w-full text-left px-3 py-2.5 rounded-xl transition-all block ${
-                  isSelected
-                    ? "bg-white/15 text-white font-bold shadow-sm border-l-2 border-[#A3E635]"
-                    : "text-white/70 hover:text-white hover:bg-white/5 font-medium"
-                }`}
-              >
-                <span className="block text-xs truncate">{circle.name}</span>
-                <span className={`block text-[9px] mt-0.5 uppercase tracking-tight ${isSelected ? "text-[#A3E635]" : "text-white/40"}`}>
-                  {circle.type}
-                </span>
-              </button>
-            );
-          })}
+          {isLoading ? (
+            <p className="text-[11px] text-white/40 px-3 py-2 font-medium">Loading circles...</p>
+          ) : userCircles.length === 0 ? (
+            <p className="text-[11px] text-white/40 px-3 py-2 font-medium">No savings circles</p>
+          ) : (
+            userCircles.map((circle) => {
+              const isSelected = currentCircleId === circle.id;
+              return (
+                <button
+                  key={circle.id}
+                  onClick={() => setCurrentCircleId(circle.id)}
+                  className={`w-full text-left px-3 py-2.5 rounded-xl transition-all block ${
+                    isSelected
+                      ? "bg-white/15 text-white font-bold shadow-sm border-l-2 border-[#A3E635]"
+                      : "text-white/70 hover:text-white hover:bg-white/5 font-medium"
+                  }`}
+                >
+                  <span className="block text-xs truncate">{circle.name}</span>
+                  <span className={`block text-[9px] mt-0.5 uppercase tracking-tight ${isSelected ? "text-[#A3E635]" : "text-white/40"}`}>
+                    {circle.type}
+                  </span>
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
       <div className="space-y-4">
-        <button className="w-full py-2 bg-[#006C49] hover:bg-[#005439] text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 border border-white/5">
+        <Link href="/questions" className="w-full py-2 bg-[#006C49] hover:bg-[#005439] text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 border border-white/5">
           <Plus className="h-3.5 w-3.5" /> Action
-        </button>
+        </Link>
         <div className="pt-4 border-t border-white/10">
-          <button className="w-full py-2 bg-white/10 hover:bg-white/15 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all">
+          <Link href="/questions" className="w-full py-2 bg-white/10 hover:bg-white/15 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all">
             <FolderPlus className="h-3.5 w-3.5 text-[#A3E635]" /> New Circle
-          </button>
+          </Link>
         </div>
       </div>
     </>
@@ -101,45 +134,67 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   );
 
   return (
-    <div className="flex min-h-screen bg-[#FAFAFA] font-sans antialiased selection:bg-[#006C49]/10 max-w-full overflow-x-hidden">
-      
-      {/* 1. Green Sidebar: ONLY visible on large screens (xl) */}
-      <aside className="hidden xl:flex w-[210px] bg-[#004D34] text-white flex-col justify-between fixed inset-y-0 left-0 z-20 px-4 py-6 rounded-tr-[24px]">
-        <GreenSidebarContent />
-      </aside>
-
-      {/* 2. White Sidebar: Visible on xl (pushed right) and visible on lg (snapped to left) */}
-      <aside className="hidden lg:flex w-[220px] border-r border-gray-100 bg-white flex-col fixed inset-y-0 left-0 xl:left-[210px] z-10 px-3 py-6 pt-6 xl:pt-14">
-        <div className="hidden xl:block h-6 mb-4" /> {/* Spacer for design alignment on xl desktop */}
-        <WhiteNavigationContent />
-      </aside>
-
-      {/* 3. Top Navbar for screens smaller than lg */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-[#004D34] text-white flex items-center justify-between px-4 z-30 shadow-sm">
-        <div className="flex flex-col">
-          <span className="text-sm font-bold tracking-tight">Ajo Vault</span>
-        </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-1.5 rounded-lg bg-white/10">
-          {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-      </header>
-
-      {/* 4. Overlay & Combined Mobile Side Menu */}
-      {isMobileMenuOpen && <div className="lg:hidden fixed inset-0 bg-black/40 z-40" onClick={() => setIsMobileMenuOpen(false)} />}
-      <div className={`lg:hidden fixed inset-y-0 left-0 flex z-50 transform transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="w-[180px] bg-[#004D34] text-white flex flex-col justify-between p-4 pt-16">
+    <CircleContext.Provider value={{ currentCircleId, setCurrentCircleId, userCircles, isLoading }}>
+      <div className="flex min-h-screen bg-[#FAFAFA] font-sans antialiased selection:bg-[#006C49]/10 max-w-full overflow-x-hidden">
+        
+        {/* 1. Green Sidebar: ONLY visible on large screens (xl) */}
+        <aside className="hidden xl:flex w-[210px] bg-[#004D34] text-white flex-col justify-between fixed inset-y-0 left-0 z-20 px-4 py-6 rounded-tr-[24px]">
           <GreenSidebarContent />
-        </div>
-        <div className="w-[160px] bg-white border-r border-gray-100 p-3 pt-16 shadow-xl">
+        </aside>
+
+        {/* 2. White Sidebar: Visible on xl (pushed right) and visible on lg (snapped to left) */}
+        <aside className="hidden lg:flex w-[220px] border-r border-gray-100 bg-white flex-col fixed inset-y-0 left-0 xl:left-[210px] z-10 px-3 py-6 pt-6 xl:pt-14">
+          <div className="hidden xl:block h-6 mb-4" /> {/* Spacer for design alignment on xl desktop */}
           <WhiteNavigationContent />
+        </aside>
+
+        {/* 3. Top Navbar for screens smaller than lg */}
+        <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-[#004D34] text-white flex items-center justify-between px-4 z-30 shadow-sm">
+          <div className="flex flex-col">
+            <span className="text-sm font-bold tracking-tight">Ajo Vault</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <NotificationBell />
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-1.5 rounded-lg bg-white/10">
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </header>
+
+        {/* 4. Overlay & Combined Mobile Side Menu */}
+        {isMobileMenuOpen && <div className="lg:hidden fixed inset-0 bg-black/40 z-40" onClick={() => setIsMobileMenuOpen(false)} />}
+        <div className={`lg:hidden fixed inset-y-0 left-0 flex z-50 transform transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
+          <div className="w-[180px] bg-[#004D34] text-white flex flex-col justify-between p-4 pt-16">
+            <GreenSidebarContent />
+          </div>
+          <div className="w-[160px] bg-white border-r border-gray-100 p-3 pt-16 shadow-xl">
+            <WhiteNavigationContent />
+          </div>
         </div>
-      </div>
 
-      {/* 5. Main Screen Area: dynamic padding based on sidebar visibility states */}
-      <div className="flex-1 w-full min-w-0 pt-14 lg:pt-0 pl-0 lg:pl-[220px] xl:pl-[430px] transition-all duration-200">
-        {children}
-      </div>
+        {/* 5. Main Screen Area: dynamic padding based on sidebar visibility states */}
+        <div className="flex-1 w-full min-w-0 pt-14 lg:pt-0 pl-0 lg:pl-[220px] xl:pl-[430px] transition-all duration-200">
+          
+          {/* Desktop Top Header Bar */}
+          <header className="hidden lg:flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 sticky top-0 z-10">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Active Circle:</span>
+              <span className="text-xs font-bold text-[#006C49] bg-emerald-50 px-2.5 py-1 rounded-full">
+                {userCircles.find((c) => c.id === currentCircleId)?.name || "No active circle"}
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              <NotificationBell />
+              <div className="h-8 w-8 rounded-full bg-[#006C49] text-white flex items-center justify-center font-bold text-xs select-none shadow-sm">
+                U
+              </div>
+            </div>
+          </header>
 
-    </div>
+          {children}
+        </div>
+
+      </div>
+    </CircleContext.Provider>
   );
 }

@@ -29,7 +29,7 @@ export const clearToken = () => {
   if (typeof window !== "undefined") sessionStorage.removeItem(TOKEN_KEY);
 };
 
-const getToken = () => {
+export const getToken = () => {
   if (typeof window === "undefined") return null;
   return sessionStorage.getItem(TOKEN_KEY);
 };
@@ -52,52 +52,18 @@ http.interceptors.request.use((config) => {
   return config;
 });
 
-// ---- refresh-token-on-401 flow ----
-// No token to read here — the refresh cookie travels with the request
-// automatically. The backend validates it, rotates it, and re-sets the
-// Set-Cookie headers. We just retry the original request afterward.
-let isRefreshing = false;
-let pendingQueue: Array<() => void> = [];
-
-function resolvePendingQueue() {
-  pendingQueue.forEach((cb) => cb());
-  pendingQueue = [];
-}
-
+// ---- 401 Unauthorized Session Expiration flow ----
 http.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as
-      | (AxiosRequestConfig & { _retry?: boolean })
-      | undefined;
-
-    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
-      return Promise.reject(error);
-    }
-
-    if (isRefreshing) {
-      return new Promise((resolve) => {
-        pendingQueue.push(() => resolve(http(originalRequest)));
-      });
-    }
-
-    originalRequest._retry = true;
-    isRefreshing = true;
-
-    try {
-      await axios.post(`${BASE_URL}${ENDPOINTS.auth.refreshToken}`, null, {
-        withCredentials: true,
-      });
-      resolvePendingQueue();
-      return http(originalRequest);
-    } catch (refreshError) {
-      // Backend has already cleared the cookies at this point (expired/invalid
-      // refresh). Broadcast so the app can react (e.g. redirect to /login).
+    if (error.response?.status === 401) {
+      clearToken();
       window.dispatchEvent(new Event("auth:logout"));
-      return Promise.reject(refreshError);
-    } finally {
-      isRefreshing = false;
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
     }
+    return Promise.reject(error);
   }
 );
 

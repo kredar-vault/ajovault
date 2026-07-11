@@ -3,12 +3,14 @@
 export type GroupFrequency = "weekly" | "bi-weekly" | "monthly";
 
 export interface CreateGroupPayload {
-  groupName: string;
+  name: string;
   purpose: string;
-  expectedMembers: number;
+  maxMembers: number;
   frequency: GroupFrequency;
   contributionAmount: number;
   firstPayoutRecipient: string;
+  contactEmail: string;
+  contactPhone: string;
 }
 
 export interface CreateGroupResponse {
@@ -23,4 +25,40 @@ export interface SendInvitePayload {
 
 export interface InviteLinkResponse {
   link: string;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  purpose: string;
+  creatorId: string;
+  expectedMembers: number;
+  frequency: GroupFrequency;
+  contributionAmount: number;
+  firstPayoutRecipient: string;
+  inviteCode?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GroupSettings {
+  groupId: string;
+  groupName?: string;
+  purpose?: string;
+  frequency?: GroupFrequency;
+  contributionAmount?: number;
+  firstPayoutRecipient?: string;
+}
+
+export interface GroupMember {
+  id: string;
+  groupId: string;
+  userId: string;
+  role: "OWNER" | "ADMIN" | "MEMBER";
+  joinedAt: string;
+  user?: {
+    id: string;
+    email: string;
+    fullName: string;
+  };
 }
