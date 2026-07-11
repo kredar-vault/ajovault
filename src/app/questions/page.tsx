@@ -106,19 +106,18 @@ export default function OnboardingQuestionsPage() {
 
     try {
       const finalPayload = {
-        groupName: onboardingPayload.circleDetails?.groupName || "",
-        purpose: onboardingPayload.circleDetails?.groupName || "Savings Circle Group",
-        expectedMembers: parsedGroupSize,
-        frequency: targetFrequency,
+        name: onboardingPayload.circleDetails?.groupName || "",
+        primaryPurpose: onboardingPayload.circleDetails?.groupName || "Savings Circle Group",
         contributionAmount: targetAmount,
-        firstPayoutRecipient: onboardingPayload.financialRules?.firstPayoutRecipient || "creator",
+        frequency: targetFrequency,
+        maxMembers: parsedGroupSize,
       };
 
       // Call POST /groups endpoint
       const response = await createGroup(finalPayload);
 
       // Save backend resource reference identifier
-      setGroupId(response.groupId);
+      setGroupId(response.id);
 
       // Shift forward to Invitation Layout (Step 6)
       setCurrentStep(5);
