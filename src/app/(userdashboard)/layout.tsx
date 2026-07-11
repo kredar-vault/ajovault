@@ -10,6 +10,7 @@ import {
   Menu, X,
   WalletCards
 } from "lucide-react";
+import { LogoutButton } from "@/components/userdashboard/LogoutButton";
 
 interface CircleContextType {
   currentCircleId: string | null;
@@ -102,32 +103,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <FolderPlus className="h-3.5 w-3.5 text-[#A3E635]" /> New Circle
           </Link>
         </div>
+        <div className="pt-2 border-t border-white/10">
+          <LogoutButton variant="sidebar" />
+        </div>
       </div>
     </>
   );
 
   const WhiteNavigationContent = () => (
-    <nav className="space-y-0.5">
-      {globalNavItems.map((item) => {
-        const isActive = activeTab === item.name;
-        return (
-          <Link
-            key={item.name}
-            href={item.href}
-            onClick={() => {
-              setActiveTab(item.name);
-              setIsMobileMenuOpen(false);
-            }}
-            className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all ${isActive
-                ? "bg-[#EEF2F6] text-[#1E293B]"
-                : "text-[#6B7280] hover:text-[#1E293B] hover:bg-[#F9FAFB]"
-              }`}
-          >
-            <item.icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#475569]" : "text-[#9CA3AF]"}`} />
-            {item.name}
-          </Link>
-        );
-      })}
+    <nav className="space-y-0.5 flex flex-col h-full">
+      <div className="flex-1 space-y-0.5">
+        {globalNavItems.map((item) => {
+          const isActive = activeTab === item.name;
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              onClick={() => {
+                setActiveTab(item.name);
+                setIsMobileMenuOpen(false);
+              }}
+              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all ${isActive
+                  ? "bg-[#EEF2F6] text-[#1E293B]"
+                  : "text-[#6B7280] hover:text-[#1E293B] hover:bg-[#F9FAFB]"
+                }`}
+            >
+              <item.icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#475569]" : "text-[#9CA3AF]"}`} />
+              {item.name}
+            </Link>
+          );
+        })}
+      </div>
+      <div className="pt-2 border-t border-gray-100 mt-4">
+        <LogoutButton variant="menu" />
+      </div>
     </nav>
   );
 
