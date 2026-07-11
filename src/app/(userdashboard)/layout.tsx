@@ -134,9 +134,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           );
         })}
       </div>
-      <div className="pt-2 border-t border-gray-100 mt-4">
-        <LogoutButton variant="menu" />
-      </div>
     </nav>
   );
 
