@@ -3,14 +3,12 @@
 export type GroupFrequency = "weekly" | "bi-weekly" | "monthly";
 
 export interface CreateGroupPayload {
-  name: string;
+  groupName: string;
   purpose: string;
-  maxMembers: number;
+  expectedMembers: number;
   frequency: GroupFrequency;
   contributionAmount: number;
   firstPayoutRecipient: string;
-  contactEmail: string;
-  contactPhone: string;
 }
 
 export interface CreateGroupResponse {

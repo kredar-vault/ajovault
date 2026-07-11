@@ -20,7 +20,7 @@ export default function PayoutSchedule() {
     return (
       <main className="p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center min-h-[400px] gap-2">
         <Loader2 className="h-8 w-8 text-[#006C49] animate-spin" />
-        <p className="text-xs font-semibold text-gray-500">Loading payout schedule...</p>
+        <p className="text-xs font-semibold text-gray-500">Please wait...</p>
       </main>
     );
   }

@@ -92,12 +92,10 @@ export function Step2SavingsCircle({ onNext, onBack }: Step2Props) {
                 className="w-full appearance-none rounded-lg border-0 bg-[#F1F5F9]/70 py-3.5 pl-11 pr-10 text-sm text-[#0F172A] outline-none transition-all focus:bg-[#F1F5F9] focus:ring-1 focus:ring-[#001E2C]"
               >
                 <option value="" disabled hidden>Select a goal...</option>
-                <option value="Family">Family Projects</option>
-                <option value="Friends">Friends & Social</option>
-                <option value="Workplace">Workplace Circle</option>
-                <option value="Rent">Rent & Housing</option>
-                <option value="Targeted">Targeted Savings</option>
-                <option value="Business">Business & Investment</option>
+                <option value="vacation">Vacation & Travel</option>
+                <option value="business">Business Investment</option>
+                <option value="emergency">Emergency Reserve</option>
+                <option value="property">Asset & Property Purchase</option>
               </select>
               <div className="pointer-events-none absolute right-4 flex flex-col text-[#94A3B8]">
                 <span className="text-[8px] leading-none">▲</span>
