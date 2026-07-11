@@ -62,7 +62,8 @@ http.interceptors.response.use(
       if (typeof window !== "undefined") {
         const path = window.location.pathname;
         const guestPaths = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify-otp"];
-        if (!guestPaths.includes(path)) {
+        const isJoinPage = path.startsWith("/join/");
+        if (!guestPaths.includes(path) && !isJoinPage) {
           window.location.href = "/login";
         }
       }
