@@ -60,7 +60,11 @@ http.interceptors.response.use(
       clearToken();
       window.dispatchEvent(new Event("auth:logout"));
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        const path = window.location.pathname;
+        const guestPaths = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify-otp"];
+        if (!guestPaths.includes(path)) {
+          window.location.href = "/login";
+        }
       }
     }
     return Promise.reject(error);

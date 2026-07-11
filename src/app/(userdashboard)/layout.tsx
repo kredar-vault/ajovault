@@ -4,8 +4,8 @@ import React, { useState, useEffect, createContext, useContext } from "react";
 import Link from "next/link";
 import { useMyGroups } from "@/hooks/useGroups";
 import { NotificationBell } from "@/components/userdashboard/NotificationBell";
-import { 
-  LayoutDashboard, Users, CalendarDays, 
+import {
+  LayoutDashboard, Users, CalendarDays,
   Settings, Plus, ReceiptCent, FolderPlus,
   Menu, X,
   WalletCards
@@ -68,7 +68,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
         <div className="space-y-1">
           {isLoading ? (
-            <p className="text-[11px] text-white/40 px-3 py-2 font-medium">Loading circles...</p>
+            <p className="text-[11px] text-white/40 px-3 py-2 font-medium">Please wait...</p>
           ) : userCircles.length === 0 ? (
             <p className="text-[11px] text-white/40 px-3 py-2 font-medium">No savings circles</p>
           ) : (
@@ -78,11 +78,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <button
                   key={circle.id}
                   onClick={() => setCurrentCircleId(circle.id)}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl transition-all block ${
-                    isSelected
+                  className={`w-full text-left px-3 py-2.5 rounded-xl transition-all block ${isSelected
                       ? "bg-white/15 text-white font-bold shadow-sm border-l-2 border-[#A3E635]"
                       : "text-white/70 hover:text-white hover:bg-white/5 font-medium"
-                  }`}
+                    }`}
                 >
                   <span className="block text-xs truncate">{circle.name}</span>
                   <span className={`block text-[9px] mt-0.5 uppercase tracking-tight ${isSelected ? "text-[#A3E635]" : "text-white/40"}`}>
@@ -119,11 +118,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               setActiveTab(item.name);
               setIsMobileMenuOpen(false);
             }}
-            className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all ${
-              isActive
+            className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all ${isActive
                 ? "bg-[#EEF2F6] text-[#1E293B]"
                 : "text-[#6B7280] hover:text-[#1E293B] hover:bg-[#F9FAFB]"
-            }`}
+              }`}
           >
             <item.icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#475569]" : "text-[#9CA3AF]"}`} />
             {item.name}
@@ -136,7 +134,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <CircleContext.Provider value={{ currentCircleId, setCurrentCircleId, userCircles, isLoading }}>
       <div className="flex min-h-screen bg-[#FAFAFA] font-sans antialiased selection:bg-[#006C49]/10 max-w-full overflow-x-hidden">
-        
+
         {/* 1. Green Sidebar: ONLY visible on large screens (xl) */}
         <aside className="hidden xl:flex w-[210px] bg-[#004D34] text-white flex-col justify-between fixed inset-y-0 left-0 z-20 px-4 py-6 rounded-tr-[24px]">
           <GreenSidebarContent />
@@ -174,7 +172,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* 5. Main Screen Area: dynamic padding based on sidebar visibility states */}
         <div className="flex-1 w-full min-w-0 pt-14 lg:pt-0 pl-0 lg:pl-[220px] xl:pl-[430px] transition-all duration-200">
-          
+
           {/* Desktop Top Header Bar */}
           <header className="hidden lg:flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 sticky top-0 z-10">
             <div className="flex items-center gap-2">

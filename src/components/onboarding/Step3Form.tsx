@@ -130,7 +130,7 @@ export function Step3Form({ formData, setFormData, handleSubmit, onBack }: Step3
             onChange={(e) => setFormData((prev) => ({ ...prev, firstPayoutRecipient: e.target.value }))}
             className="w-full appearance-none rounded-lg border-0 bg-[#F1F5F9]/70 py-3.5 px-4 text-sm text-[#0F172A] outline-none transition-all focus:bg-white focus:ring-1 focus:ring-[#001E2C] border border-transparent focus:border-gray-200"
           >
-            <option value="creator">Admin (You)</option>
+            <option value="admin">Admin (You)</option>
             <option value="random">Randomize First Slots</option>
           </select>
           <div className="pointer-events-none absolute right-4 text-[#94A3B8] text-[8px]">

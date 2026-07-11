@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { HelpCircle } from "lucide-react";
 import { Step3Form } from "./Step3Form";
 
@@ -21,7 +22,7 @@ export function Step3FinancialRules({ expectedMembers = 10, onNext, onBack }: St
   const [formData, setFormData] = useState<Step3Data>({
     frequency: "weekly",
     contributionAmount: 500,
-    firstPayoutRecipient: "creator",
+    firstPayoutRecipient: "admin",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,6 +48,12 @@ export function Step3FinancialRules({ expectedMembers = 10, onNext, onBack }: St
             Ajo Vault
           </span>
         </div>
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#006C49] hover:bg-[#005439] text-white rounded-lg text-xs font-bold transition-all shadow-sm"
+        >
+          Back to Dashboard
+        </Link>
       </header>
 
       <div className="max-w-5xl mx-auto px-4 py-12 space-y-6">
@@ -106,7 +113,7 @@ export function Step3FinancialRules({ expectedMembers = 10, onNext, onBack }: St
               <div className="flex items-center justify-between pt-4 pb-1.5">
                 <span className="text-[#64748B]">First Payout To</span>
                 <span className="text-xs font-semibold text-[#006C49] bg-[#006C49]/5 px-2 py-0.5 rounded-full capitalize">
-                  {formData.firstPayoutRecipient === "creator" ? "Admin (You)" : "Randomized"}
+                  {formData.firstPayoutRecipient === "admin" ? "Admin (You)" : "Randomized"}
                 </span>
               </div>
 

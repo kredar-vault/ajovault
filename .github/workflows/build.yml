@@ -2,7 +2,7 @@ name: Build & publish image
 
 on:
   push:
-    branches: [staging, main]
+    branches: [dev, staging, main]
 
 permissions:
   contents: read
@@ -24,9 +24,13 @@ jobs:
             echo "moving=prod"                              >> "$GITHUB_OUTPUT"
             echo "dispatch=deploy-prod"                     >> "$GITHUB_OUTPUT"
             echo "api=https://api.vault.kredar.xyz"         >> "$GITHUB_OUTPUT"
-          else
+          elif [ "${{ github.ref_name }}" = "staging" ]; then
             echo "moving=staging"                            >> "$GITHUB_OUTPUT"
             echo "dispatch=deploy-staging"                   >> "$GITHUB_OUTPUT"
+            echo "api=https://api.vault.staging.kredar.xyz"  >> "$GITHUB_OUTPUT"
+          else
+            echo "moving=dev"                                >> "$GITHUB_OUTPUT"
+            echo "dispatch=deploy-dev"                       >> "$GITHUB_OUTPUT"
             echo "api=https://api.vault.staging.kredar.xyz"  >> "$GITHUB_OUTPUT"
           fi
 

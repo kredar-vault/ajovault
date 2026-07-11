@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/shared/Button";
 import { InviteShareChannels } from "./InviteShareChannels";
@@ -30,6 +31,12 @@ export function StepInviteMembers({
           <Image src="/icon.svg" alt="Ajo Vault" width={22} height={22} className="text-[#006C49]" />
           <span className="text-base font-bold tracking-tight text-main">Ajo Vault</span>
         </div>
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#006C49] hover:bg-[#005439] text-white rounded-lg text-xs font-bold transition-all shadow-sm"
+        >
+          Back to Dashboard
+        </Link>
       </header>
 
       <div className="max-w-4xl mx-auto px-4 py-16">

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { WelcomeStep } from "@/components/onboarding/WelcomeStep";
 import { Step2SavingsCircle, Step2Data } from "@/components/onboarding/Step2";
 import { Step3FinancialRules, Step3Data } from "@/components/onboarding/Step3";
@@ -11,42 +12,6 @@ import { Step5Review } from "@/components/onboarding/Step5";
 import { Step5Loading } from "@/components/onboarding/Step5Loading";
 import { Step5Success } from "@/components/onboarding/Step5Sucess";
 import { useGroupOnboarding } from "@/hooks/useGroupOnboarding";
-import { useAccount } from "@/hooks/useAccount";
-
-import { getToken } from "@/lib/http";
-
-function getContactDetailsFromToken() {
-  try {
-    const token = getToken();
-    if (!token) return { email: "", phone: "" };
-    const base64Url = token.split('.')[1];
-    if (!base64Url) return { email: "", phone: "" };
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      window.atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    const payload = JSON.parse(jsonPayload);
-    console.log("ONBOARDING JWT CLAIM DIAGNOSTICS:", payload);
-    
-    const email = payload.email || 
-                  payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] || 
-                  "";
-                  
-    const phone = payload.phone || 
-                  payload.phoneNumber || 
-                  payload.phone_number ||
-                  payload["http://schemas.xmlsoap.org/ws/2008/06/identity/claims/mobilephone"] || 
-                  "";
-                  
-    return { email, phone };
-  } catch (e) {
-    console.error("Failed to decode token", e);
-    return { email: "", phone: "" };
-  }
-}
 
 export default function OnboardingQuestionsPage() {
   const router = useRouter();
@@ -56,13 +21,50 @@ export default function OnboardingQuestionsPage() {
   const [transitionMessage, setTransitionMessage] = useState("");
 
   const { createGroup, error: apiError } = useGroupOnboarding();
-  const { data: account } = useAccount();
-  console.log("ONBOARDING RENDER - account:", account);
 
   const [onboardingPayload, setOnboardingPayload] = useState({
     circleDetails: null as Step2Data | null,
     financialRules: null as Step3Data | null,
   });
+
+  // Load progress from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("ajovault_onboarding_progress");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (typeof parsed.currentStep === "number") {
+            setCurrentStep(parsed.currentStep);
+          }
+          if (parsed.groupId) {
+            setGroupId(parsed.groupId);
+          }
+          if (parsed.onboardingPayload) {
+            setOnboardingPayload(parsed.onboardingPayload);
+          }
+        } catch (e) {
+          console.error("Failed to restore onboarding progress", e);
+        }
+      }
+    }
+  }, []);
+
+  // Save progress to localStorage whenever state changes (except success step)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (currentStep === 6) {
+        localStorage.removeItem("ajovault_onboarding_progress");
+      } else {
+        const progress = {
+          currentStep,
+          groupId,
+          onboardingPayload,
+        };
+        localStorage.setItem("ajovault_onboarding_progress", JSON.stringify(progress));
+      }
+    }
+  }, [currentStep, groupId, onboardingPayload]);
 
   const handleNextStep = () => setCurrentStep((prev) => prev + 1);
 
@@ -79,7 +81,7 @@ export default function OnboardingQuestionsPage() {
   };
 
   const handleWelcomeComplete = () => {
-    runTransition("Loading circle details...", handleNextStep);
+    runTransition("Please wait ...", handleNextStep);
   };
 
   const handleStep2Complete = (data: Step2Data) => {
@@ -87,7 +89,7 @@ export default function OnboardingQuestionsPage() {
       ...prev,
       circleDetails: data,
     }));
-    runTransition("Analyzing target parameters...", handleNextStep);
+    runTransition("Please wait ...", handleNextStep);
   };
 
   const handleStep3Complete = (data: Step3Data) => {
@@ -95,7 +97,7 @@ export default function OnboardingQuestionsPage() {
       ...prev,
       financialRules: data,
     }));
-    runTransition("Formulating rotation cycles...", handleNextStep);
+    runTransition("Please wait ...", handleNextStep);
   };
 
   const triggerCreationSequence = async () => {
@@ -103,20 +105,14 @@ export default function OnboardingQuestionsPage() {
     setCurrentStep(4);
 
     try {
-      const tokenDetails = getContactDetailsFromToken();
       const finalPayload = {
-        name: onboardingPayload.circleDetails?.groupName || "",
-        purpose: onboardingPayload.circleDetails?.primaryPurpose || "Savings Circle Group",
-        maxMembers: parsedGroupSize,
+        groupName: onboardingPayload.circleDetails?.groupName || "",
+        purpose: onboardingPayload.circleDetails?.groupName || "Savings Circle Group",
+        expectedMembers: parsedGroupSize,
         frequency: targetFrequency,
         contributionAmount: targetAmount,
         firstPayoutRecipient: onboardingPayload.financialRules?.firstPayoutRecipient || "creator",
-        contactEmail: tokenDetails.email || account?.email || "",
-        contactPhone: tokenDetails.phone || account?.phoneNumber || "",
       };
-
-      console.log("ONBOARDING DIAGNOSTICS - account object:", account);
-      console.log("ONBOARDING DIAGNOSTICS - finalPayload being sent:", finalPayload);
 
       // Call POST /groups endpoint
       const response = await createGroup(finalPayload);
@@ -126,11 +122,8 @@ export default function OnboardingQuestionsPage() {
 
       // Shift forward to Invitation Layout (Step 6)
       setCurrentStep(5);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Group initialization error:", err);
-      if (err?.response?.data) {
-        console.error("Group creation validation details:", JSON.stringify(err.response.data, null, 2));
-      }
       // Fallback gracefully to review page so user can retry
       setCurrentStep(3);
     }
@@ -179,6 +172,17 @@ export default function OnboardingQuestionsPage() {
         <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-brand-secondary px-4 py-12">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.03),transparent_30%)]" />
           <div className="absolute -bottom-20 -left-20 h-96 w-96 rounded-full bg-[#19AEE8]/5 blur-[130px]" />
+
+          {/* Floating Back to Dashboard Button */}
+          <div className="absolute top-6 left-6 z-20">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/20 border border-white/10 text-black rounded-lg text-xs font-semibold backdrop-blur-md transition-all shadow-sm group"
+            >
+              <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
+              Back to Dashboard
+            </Link>
+          </div>
 
           {currentStep === 0 && (
             <WelcomeStep onNext={handleWelcomeComplete} />

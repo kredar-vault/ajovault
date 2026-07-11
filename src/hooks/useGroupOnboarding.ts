@@ -9,14 +9,12 @@ import type { ApiResult } from "../types";
 export type GroupFrequency = "weekly" | "bi-weekly" | "monthly";
 
 export interface CreateGroupPayload {
-  name: string;
+  groupName: string;
   purpose: string;
-  maxMembers: number;
+  expectedMembers: number;
   frequency: GroupFrequency;
   contributionAmount: number;
   firstPayoutRecipient: string;
-  contactEmail: string;
-  contactPhone: string;
 }
 
 export interface CreateGroupResponse {
@@ -45,29 +43,7 @@ export function useGroupOnboarding() {
       const response = await http.post<ApiResult<CreateGroupResponse>>(ENDPOINTS.groups.root, payload);
       return response.data.data;
     } catch (err: any) {
-      const responseData = err?.response?.data;
-      let msg = "Failed to create savings group.";
-      if (responseData) {
-        if (responseData.errors && typeof responseData.errors === "object") {
-          const errList: string[] = [];
-          for (const key in responseData.errors) {
-            if (Array.isArray(responseData.errors[key])) {
-              errList.push(`${key}: ${responseData.errors[key].join(", ")}`);
-            } else {
-              errList.push(`${key}: ${responseData.errors[key]}`);
-            }
-          }
-          msg = errList.join("; ");
-        } else if (typeof responseData.message === "string") {
-          msg = responseData.message;
-        } else if (Array.isArray(responseData.message)) {
-          msg = responseData.message.join(", ");
-        } else if (typeof responseData.error === "string") {
-          msg = responseData.error;
-        } else if (responseData.message) {
-          msg = JSON.stringify(responseData.message);
-        }
-      }
+      const msg = err?.response?.data?.message || "Failed to create savings group.";
       setError(msg);
       throw err;
     } finally {
