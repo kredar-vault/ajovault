@@ -117,7 +117,7 @@ export default function MembersDashboard() {
         <div className="xl:col-span-2 w-full min-w-0">
           <CycleProgressCard stats={progressStats} />
         </div>
-        <div className="w-full min-w-0">
+        <div className="w-full min-w-0" id="invite">
           <GrowCircleCard inviteUrl={groupDetails?.inviteCode ? `ajovault.com/join/${groupDetails.inviteCode}` : "ajovault.com/join"} />
         </div>
       </div>
