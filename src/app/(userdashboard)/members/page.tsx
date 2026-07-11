@@ -75,7 +75,7 @@ export default function MembersDashboard() {
   const mappedMembers: Member[] = (members || []).map((m) => {
     const name = m.user?.fullName || "Group Member";
     return {
-      id: m.id,
+      id: m.id || m.userId,
       name,
       joinedDate: new Date(m.joinedAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
       status: m.role === "OWNER" || m.role === "ADMIN" ? "Paid" : "Pending",
