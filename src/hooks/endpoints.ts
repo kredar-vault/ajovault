@@ -6,6 +6,8 @@ export const ENDPOINTS = {
   auth: {
     signup: "/auth/register",
     login: "/auth/login",
+    verifyLoginOtp: "/auth/verify-login-otp",
+    resendLoginOtp: "/auth/resend-login-otp",
     verifyOtp: "/auth/verify-otp",
     resendOtp: "/auth/resend-otp",
     forgotPassword: "/auth/forgot-password",

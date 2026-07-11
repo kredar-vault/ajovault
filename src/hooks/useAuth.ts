@@ -13,6 +13,10 @@ import type {
   ResendOtpResponse,
   LoginRequest,
   LoginResponse,
+  VerifyLoginOtpRequest,
+  VerifyLoginOtpResponse,
+  ResendLoginOtpRequest,
+  ResendLoginOtpResponse,
   ForgotPasswordRequest,
   ForgotPasswordResponse,
   ResetPasswordRequest,
@@ -51,6 +55,20 @@ export function useLogin() {
 /**
  * Sends the email to the backend to trigger/generate the password reset link
  */
+export function useVerifyLoginOtp() {
+  return useMutation({
+    mutationFn: (body: VerifyLoginOtpRequest) =>
+      post<VerifyLoginOtpResponse, VerifyLoginOtpRequest>(ENDPOINTS.auth.verifyLoginOtp, body),
+  });
+}
+
+export function useResendLoginOtp() {
+  return useMutation({
+    mutationFn: (body: ResendLoginOtpRequest) =>
+      post<ResendLoginOtpResponse, ResendLoginOtpRequest>(ENDPOINTS.auth.resendLoginOtp, body),
+  });
+}
+
 export function useForgotPassword() {
   return useMutation({
     mutationFn: (body: ForgotPasswordRequest) =>
