@@ -1,15 +1,19 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+// import { Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "./providers"; 
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-plus-jakarta",
-  display: "swap",
-});
+// const plusJakarta = Plus_Jakarta_Sans({
+//   subsets: ["latin"],
+//   variable: "--font-plus-jakarta",
+//   display: "swap",
+// });
+
+const plusJakarta = {
+  variable: "plus-jakarta-fallback",
+};
 
 export const metadata: Metadata = {
   title: {

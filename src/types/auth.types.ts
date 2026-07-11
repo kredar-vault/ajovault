@@ -27,10 +27,12 @@ export interface SignupRequest {
 export interface SignupData {
   userId: string;
   email: string;
-  message: string;
+  password: string;
 }
 
-export type SignupResponse = ApiResult<SignupData>;
+export interface LoginResponse {
+  message: string;
+}
 
 // --- OTP Verification (after signup) ---
 export interface VerifyOtpRequest {
@@ -69,4 +71,43 @@ export interface ResetPasswordRequest {
 
 export type ResetPasswordResponse = ApiResult<object>;
 
-export type LogoutResponse = ApiResult<object>;
+export interface LogoutResponse {
+  message: string;
+}
+
+// --- Account Settings & Profile ---
+export interface UpdateAccountRequest {
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  email?: string;
+  phoneNumber?: string;
+  preferences?: {
+    defaultCurrency?: string;
+  };
+}
+
+export interface UpdateAccountResponse {
+  message: string;
+  user: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber?: string;
+  };
+}
+
+export interface UpdatePasswordRequest {
+  currentPassword?: string;
+  oldPassword?: string;
+  newPassword?: string;
+  password?: string;
+  confirmPassword?: string;
+}
+
+export interface UpdatePinRequest {
+  pin: string;
+  confirmPin: string;
+  oldPin?: string;
+}

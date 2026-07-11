@@ -1,44 +1,88 @@
 "use client";
 
 import React from "react";
-import { SlidersHorizontal, Search } from "lucide-react";
-
-import { CycleInfo, NextPayout, ProgressStats, Member } from "@/types";
+import { SlidersHorizontal, Search, Loader2, Plus } from "lucide-react";
+import { useCircle } from "../layout";
+import { useGroupMembers, useGroupDetails } from "@/hooks/useGroups";
+import { useDashboardData } from "@/hooks/useDashboard";
 import { CycleOverviewCard } from "@/components/userdashboard/member/CycleOverview";
 import { NextPayoutCard } from "@/components/userdashboard/member/NextPayout";
 import { CycleProgressCard } from "@/components/userdashboard/member/CycleProgress";
 import { GrowCircleCard } from "@/components/userdashboard/member/GrowCircle";
 import { MemberCard } from "@/components/userdashboard/member/MemberCard";
+import type { CycleInfo, NextPayout, ProgressStats, Member } from "@/types";
+import Link from "next/link";
 
 export default function MembersDashboard() {
-  const sampleCycle: CycleInfo = {
-    name: "Design Leaders Circle",
-    status: "ACTIVE",
-    type: "Monthly Rotation",
-    memberCount: 12,
-    contribution: 500,
-    totalPool: 6000
+  const { currentCircleId, isLoading: isCirclesLoading } = useCircle();
+
+  const { data: members, isLoading: isMembersLoading } = useGroupMembers(currentCircleId || "");
+  const { data: groupDetails, isLoading: isDetailsLoading } = useGroupDetails(currentCircleId || "");
+  const { data: dashboardData, isLoading: isDashboardLoading } = useDashboardData(currentCircleId || "");
+
+  const isLoading = isCirclesLoading || isMembersLoading || isDetailsLoading || isDashboardLoading;
+
+  if (isLoading) {
+    return (
+      <main className="p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center min-h-[400px] gap-2">
+        <Loader2 className="h-8 w-8 text-[#006C49] animate-spin" />
+        <p className="text-xs font-semibold text-gray-500">Loading circle roster...</p>
+      </main>
+    );
+  }
+
+  if (!currentCircleId) {
+    return (
+      <main className="p-4 sm:p-6 lg:p-8 max-w-[1200px] w-full mx-auto flex flex-col items-center justify-center min-h-[500px] text-center space-y-6">
+        <div className="max-w-md space-y-3">
+          <h2 className="text-xl font-bold text-gray-900">No active savings circles</h2>
+          <p className="text-sm text-gray-500">
+            Create or join a savings circle to view and manage rotation members.
+          </p>
+        </div>
+        <Link 
+          href="/questions" 
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#006C49] hover:bg-[#005439] text-white rounded-lg text-xs font-bold transition-all shadow-sm"
+        >
+          <Plus className="h-4 w-4" /> Create First Circle
+        </Link>
+      </main>
+    );
+  }
+
+  const cycleInfo: CycleInfo = {
+    name: groupDetails?.name || "Savings Circle",
+    status: (groupDetails as any)?.status || "ACTIVE",
+    type: groupDetails?.purpose || "Financial Rotation",
+    memberCount: members?.length || 0,
+    contribution: groupDetails?.contributionAmount || 0,
+    totalPool: (members?.length || 0) * (groupDetails?.contributionAmount || 0)
   };
 
-  const samplePayout: NextPayout = {
-    recipientName: "Sarah Jenkins",
-    daysRemaining: 12,
-    dateString: "Nov 1st"
+  const nextPayout: NextPayout = {
+    recipientName: dashboardData?.payout?.recipientName || "None scheduled",
+    daysRemaining: dashboardData?.payout?.daysRemaining || 0,
+    dateString: dashboardData?.payout?.daysRemaining ? `in ${dashboardData.payout.daysRemaining} days` : "N/A"
   };
 
-  const sampleProgress: ProgressStats = {
-    currentMonth: 4,
-    totalMonths: 12,
-    collected: 2000,
-    pending: 4000
+  const progressStats: ProgressStats = {
+    currentMonth: dashboardData?.progress?.receivedCount || 0,
+    totalMonths: dashboardData?.progress?.totalCount || 0,
+    collected: dashboardData?.stats?.totalContribution || 0,
+    pending: dashboardData?.stats?.pendingContributions || 0
   };
 
-  const sampleMembers: Member[] = [
-    { id: "1", name: "David Chen", joinedDate: "Jan 2024", status: "Paid", streakMonths: 4 },
-    { id: "2", name: "Elena Rodriguez", joinedDate: "Mar 2024", status: "Pending" },
-    { id: "3", name: "Sarah Jenkins", joinedDate: "Jan 2024", status: "Paid", isNextPayout: true, streakMonths: 12 },
-    { id: "4", name: "Marcus Johnson", joinedDate: "Jun 2024", status: "Missed" }
-  ];
+  const mappedMembers: Member[] = (members || []).map((m) => {
+    const name = m.user?.fullName || "Group Member";
+    return {
+      id: m.id,
+      name,
+      joinedDate: new Date(m.joinedAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+      status: m.role === "OWNER" || m.role === "ADMIN" ? "Paid" : "Pending",
+      streakMonths: m.role === "OWNER" ? 12 : 1,
+      isNextPayout: dashboardData?.payout?.recipientName === name
+    };
+  });
 
   return (
     <main className="p-4 sm:p-6 lg:p-8 max-w-full xl:max-w-[1200px] w-full mx-auto space-y-6 overflow-hidden">
@@ -62,31 +106,31 @@ export default function MembersDashboard() {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 items-stretch">
         <div className="xl:col-span-2 w-full min-w-0">
-          <CycleOverviewCard cycle={sampleCycle} />
+          <CycleOverviewCard cycle={cycleInfo} />
         </div>
         <div className="w-full min-w-0">
-          <NextPayoutCard payout={samplePayout} />
+          <NextPayoutCard payout={nextPayout} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 items-stretch">
         <div className="xl:col-span-2 w-full min-w-0">
-          <CycleProgressCard stats={sampleProgress} />
+          <CycleProgressCard stats={progressStats} />
         </div>
         <div className="w-full min-w-0">
-          <GrowCircleCard inviteUrl="ajovault.com/join/dlc-2024" />
+          <GrowCircleCard inviteUrl={groupDetails?.inviteCode ? `ajovault.com/join/${groupDetails.inviteCode}` : "ajovault.com/join"} />
         </div>
       </div>
 
       <div className="space-y-4 pt-2">
         <div>
           <h2 className="text-base font-bold text-[#111827] tracking-tight">
-            All Members ({sampleCycle.memberCount})
+            All Members ({cycleInfo.memberCount})
           </h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-          {sampleMembers.map((member) => (
+          {mappedMembers.map((member) => (
             <MemberCard key={member.id} member={member} />
           ))}
         </div>

@@ -3,11 +3,11 @@
 // When backend base URL is ready, only http.ts needs to change (baseURL), not this file.
 
 export const ENDPOINTS = {
-auth: {
+  auth: {
     signup: "/auth/register",
+    login: "/auth/login",
     verifyOtp: "/auth/verify-otp",
     resendOtp: "/auth/resend-otp",
-    login: "/auth/login",
     forgotPassword: "/auth/forgot-password",
     resetPassword: "/auth/reset-password",
     logout: "/auth/logout",
@@ -18,16 +18,17 @@ auth: {
     root: "/account",
     password: "/account/password",
     pin: "/account/pin",
+    transactions: "/account/transactions",
   },
 
-  circleSettings: {
-    get: (groupId: string) => `/groups/${groupId}/settings`,
-    update: (groupId: string) => `/groups/${groupId}/settings`,
-  },
-GROUPS: {
-    CREATE: "/groups", // POST /groups
-    SEND_INVITE: (groupId: string) => `/groups/${groupId}/invites`, // POST /groups/{groupId}/invites
-    GET_LINK: (groupId: string) => `/groups/${groupId}/invite-link`, // POST /groups/{groupId}/invite-link
+  groups: {
+    root: "/groups",
+    mine: "/groups/mine",
+    byId: (id: string) => `/groups/${id}`,
+    join: (id: string) => `/groups/${id}/join`,
+    joinWithCode: (inviteCode: string) => `/groups/join/${inviteCode}`,
+    invite: (id: string) => `/groups/${id}/invite`,
+    settings: (groupId: string) => `/groups/${groupId}/settings`,
   },
   members: {
     list: (groupId: string) => `/groups/${groupId}/members`,
@@ -35,7 +36,6 @@ GROUPS: {
       `/groups/${groupId}/members/${memberId}`,
     updateRole: (groupId: string, memberId: string) =>
       `/groups/${groupId}/members/${memberId}/role`,
-    invite: (groupId: string) => `/groups/${groupId}/invite`,
   },
 
   virtualAccounts: {
@@ -58,6 +58,8 @@ GROUPS: {
     list: (groupId: string) => `/groups/${groupId}/payouts`,
     current: (groupId: string) => `/groups/${groupId}/payouts/current`,
     upcoming: (groupId: string) => `/groups/${groupId}/payouts/upcoming`,
+    allUpcoming: "/payouts/upcoming",
+    disburse: (groupId: string, payoutId: string) => `/groups/${groupId}/payouts/${payoutId}/disburse`,
   },
 
   notifications: {
@@ -66,10 +68,21 @@ GROUPS: {
   },
 
   dashboard: {
+    root: "/dashboard",
     get: (groupId: string) => `/dashboard/${groupId}`,
+  },
+
+  contributions: {
+    root: "/contributions",
+    byGroup: (groupId: string) => `/groups/${groupId}/contributions`,
+    mine: (groupId: string) => `/groups/${groupId}/contributions/mine`,
   },
 
   activity: {
     list: (groupId: string) => `/groups/${groupId}/activity`,
+  },
+
+  webhooks: {
+    kredar: "/webhooks/kredar",
   },
 } as const;

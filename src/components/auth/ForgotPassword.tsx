@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 
 interface ForgotPasswordProps {
-  onResetSubmitted?: () => void;
+  onResetSubmitted?: (email: string) => void;
 }
 
 export function ForgotPassword({ onResetSubmitted }: ForgotPasswordProps) {
@@ -27,7 +27,7 @@ export function ForgotPassword({ onResetSubmitted }: ForgotPasswordProps) {
         onSuccess: () => {
           toast.success("Password reset link sent to your email!");
           if (onResetSubmitted) {
-            onResetSubmitted();
+            onResetSubmitted(email);
           }
         },
         onError: (err: any) => {

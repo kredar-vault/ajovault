@@ -1,16 +1,49 @@
-"use client"
-import React, { useState } from "react";
-import { Search, SlidersHorizontal, Download } from "lucide-react";
+"use client";
 
-import { Transaction } from "@/types";
+import React, { useState, useEffect } from "react";
+import { Search, SlidersHorizontal, Download, Loader2 } from "lucide-react";
+import { useAccountTransactions } from "@/hooks/useAccount";
+import type { Transaction } from "@/types";
 import { MetricCard } from "@/components/userdashboard/transcations/badges";
-import { mockTransactions } from "@/components/userdashboard/transcations/mockData";
 import { TransactionRow } from "@/components/userdashboard/transcations/TranscationRow";
 import { TransactionDetailsSidebar } from "@/components/userdashboard/transcations/TransactionDetails";
 
-
 export default function TransactionsDashboard() {
-  const [selectedTx, setSelectedTx] = useState<Transaction | null>(mockTransactions[0]);
+  const { data: transactions, isLoading } = useAccountTransactions();
+  const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
+
+  // Set the first transaction as selected by default once loaded
+  useEffect(() => {
+    if (transactions && transactions.length > 0 && !selectedTx) {
+      setSelectedTx(transactions[0]);
+    }
+  }, [transactions, selectedTx]);
+
+  if (isLoading) {
+    return (
+      <main className="p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center min-h-[400px] gap-2 bg-[#FAFAFA]">
+        <Loader2 className="h-8 w-8 text-[#006C49] animate-spin" />
+        <p className="text-xs font-semibold text-gray-500">Loading ledger...</p>
+      </main>
+    );
+  }
+
+  const txList = transactions || [];
+
+  // Calculate stats dynamically
+  const incomingSum = txList
+    .filter((tx) => tx.type === "Incoming" && tx.status === "Completed")
+    .reduce((sum, tx) => sum + tx.amount, 0);
+
+  const outgoingSum = txList
+    .filter((tx) => tx.type === "Outgoing" && tx.status === "Completed")
+    .reduce((sum, tx) => sum + tx.amount, 0);
+
+  const pendingSum = txList
+    .filter((tx) => tx.status === "Pending")
+    .reduce((sum, tx) => sum + tx.amount, 0);
+
+  const totalCount = txList.length;
 
   return (
     <div className="flex h-screen w-full bg-[#FAFAFA] overflow-hidden font-sans">
@@ -26,10 +59,10 @@ export default function TransactionsDashboard() {
 
         {/* Metrics Grid Matrix */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard label="Incoming" value={240000} subtext="+15% this month" type="incoming" />
-          <MetricCard label="Outgoing" value={400000} subtext="2 payouts made" type="outgoing" />
-          <MetricCard label="Pending" value={20000} subtext="1 transaction" type="pending" />
-          <MetricCard label="Total Transactions" value={36} subtext="Last 30 days" type="total" />
+          <MetricCard label="Incoming" value={incomingSum} subtext="Total received" type="incoming" />
+          <MetricCard label="Outgoing" value={outgoingSum} subtext="Total paid out" type="outgoing" />
+          <MetricCard label="Pending" value={pendingSum} subtext="Awaiting release" type="pending" />
+          <MetricCard label="Total Transactions" value={totalCount} subtext="Processed transfers" type="total" />
         </div>
 
         {/* Utility Search Filters Toolbar Layer */}
@@ -39,7 +72,7 @@ export default function TransactionsDashboard() {
             <input 
               type="text" 
               placeholder="Search reference..." 
-              className="w-full bg-white border border-gray-100 rounded-xl pl-9 pr-4 py-2 text-xs font-medium placeholder-[#9CA3AF] focus:outline-none focus:border-gray-200 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.01)]"
+              className="w-full bg-white border border-gray-100 rounded-xl pl-9 pr-4 py-2 text-xs font-medium placeholder-[#9CA3AF] focus:outline-none focus:border-gray-200 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.01)] text-[#111827]"
             />
           </div>
           
@@ -56,16 +89,23 @@ export default function TransactionsDashboard() {
         </div>
 
         {/* Active Structural List View Container */}
-        <div className="space-y-3">
-          {mockTransactions.map((tx) => (
-            <TransactionRow 
-              key={tx.id} 
-              tx={tx} 
-              isSelected={selectedTx?.id === tx.id} 
-              onSelect={setSelectedTx} 
-            />
-          ))}
-        </div>
+        {txList.length === 0 ? (
+          <div className="text-center py-12 bg-white border border-gray-100 rounded-2xl">
+            <p className="text-xs font-bold text-[#111827]">No transactions yet</p>
+            <p className="text-[10px] text-[#6B7280]">Funding and withdrawals will display here.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {txList.map((tx) => (
+              <TransactionRow 
+                key={tx.id} 
+                tx={tx} 
+                isSelected={selectedTx?.id === tx.id} 
+                onSelect={setSelectedTx} 
+              />
+            ))}
+          </div>
+        )}
 
         {/* Pagination Trigger Text Link */}
         <div className="text-center pt-4">
