@@ -9,16 +9,16 @@ import type { ApiResult } from "../types";
 export type GroupFrequency = "weekly" | "bi-weekly" | "monthly";
 
 export interface CreateGroupPayload {
-  groupName: string;
-  purpose: string;
-  expectedMembers: number;
-  frequency: GroupFrequency;
+  name: string;
+  primaryPurpose?: string;
   contributionAmount: number;
-  firstPayoutRecipient: string;
+  frequency: GroupFrequency;
+  maxMembers: number;
 }
 
 export interface CreateGroupResponse {
-  groupId: string;
+  id: string;
+  name: string;
   status: string;
 }
 
