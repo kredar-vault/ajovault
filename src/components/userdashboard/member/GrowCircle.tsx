@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Link from "next/link";
 import { UserPlus, Copy, Share2, Check } from "lucide-react";
 
 export function GrowCircleCard({ inviteUrl }: { inviteUrl: string }) {
@@ -17,9 +18,9 @@ export function GrowCircleCard({ inviteUrl }: { inviteUrl: string }) {
   return (
     <div className="bg-[#005C42] text-white rounded-[10px] p-5 sm:p-6 flex flex-col justify-between h-full gap-4">
       <div className="space-y-2">
-        <div className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center">
+        <Link href="/members" className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all">
           <UserPlus className="h-4 w-4 text-white" />
-        </div>
+        </Link>
         <h2 className="text-sm font-bold tracking-tight">Grow the Circle</h2>
         <p className="text-[11px] text-white/70 leading-normal max-w-[90%]">
           Invite trusted friends to join next month's rotation.
