@@ -85,7 +85,20 @@ export function useSetBankAccount() {
   });
 }
 
-// 7. POST /wallet/bank/lookup (Resolve account name from account number + bank code)
+// 7. POST /auth/provision-dva (Trigger DVA creation for the current user)
+export function useProvisionDva() {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResult<unknown>, Error, void>({
+    mutationFn: () => post<ApiResult<unknown>, Record<string, never>>(ENDPOINTS.auth.provisionDva, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.wallet.root });
+      queryClient.invalidateQueries({ queryKey: queryKeys.wallet.virtualAccount });
+      queryClient.invalidateQueries({ queryKey: queryKeys.virtualAccount.root });
+    },
+  });
+}
+
+// 8. POST /wallet/bank/lookup (Resolve account name from account number + bank code)
 export function useLookupBank() {
   return useMutation<
     ApiResult<{ accountName: string; accountNumber: string; bankCode: string }>,
