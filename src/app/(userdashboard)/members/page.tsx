@@ -75,7 +75,7 @@ export default function MembersDashboard() {
   const mappedMembers: Member[] = (members || []).map((m) => {
     const name = m.user?.fullName || "Group Member";
     return {
-      id: m.id,
+      id: m.id || m.userId,
       name,
       joinedDate: new Date(m.joinedAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
       status: m.role === "OWNER" || m.role === "ADMIN" ? "Paid" : "Pending",
@@ -117,8 +117,8 @@ export default function MembersDashboard() {
         <div className="xl:col-span-2 w-full min-w-0">
           <CycleProgressCard stats={progressStats} />
         </div>
-        <div className="w-full min-w-0">
-          <GrowCircleCard inviteUrl={groupDetails?.inviteCode ? `ajovault.com/join/${groupDetails.inviteCode}` : "ajovault.com/join"} />
+        <div className="w-full min-w-0" id="invite">
+          <GrowCircleCard inviteUrl={groupDetails?.inviteCode ? `${typeof window !== "undefined" ? window.location.origin : "https://ajovault.com"}/join/${groupDetails.inviteCode}` : ""} />
         </div>
       </div>
 
