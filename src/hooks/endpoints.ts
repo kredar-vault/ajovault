@@ -43,17 +43,13 @@ export const ENDPOINTS = {
       `/groups/${groupId}/members/${memberId}/role`,
   },
 
-  virtualAccounts: {
-    create: "/wallets/create-virtual-account",
-    get: "/wallets/virtual-account",
-  },
-
   wallet: {
     root: "/wallet",
     balance: "/wallet/balance",
-    virtualAccount: "/wallet/virtual-account",
+    dva: "/wallet/dva",                              // Your Nomba deposit account (receive money)
+    payoutAccount: "/wallet/payout-account",         // Your bank account for withdrawals (Opay, GTBank etc.)
+    payoutAccountLookup: "/wallet/payout-account/lookup", // Verify bank account before saving
     withdraw: "/wallet/withdraw",
-    bankLookup: "/wallet/bank/lookup",
   },
 
   transactions: {
