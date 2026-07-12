@@ -4,7 +4,7 @@ import React from "react";
 import { Plus, ArrowDown, ArrowUpRight, History, ShieldCheck, Loader2 } from "lucide-react";
 import { ActionButton, ActivityRow, VirtualAccountCard } from "@/components/userdashboard/wallet/WalletUI";
 import { WalletBalanceSummary } from "@/components/userdashboard/wallet/WalletBalanceSummary";
-import { useWalletSummary, useVirtualAccount } from "@/hooks/useWallet";
+import { useWalletSummary } from "@/hooks/useWallet";
 import { useCircle } from "../layout";
 import { useDashboardData } from "@/hooks/useDashboard";
 import { useGroupDetails } from "@/hooks/useGroups";
@@ -15,12 +15,11 @@ export default function WalletDashboard() {
   const { currentCircleId, isLoading: isCirclesLoading } = useCircle();
 
   const { data: walletSummary, isLoading: isWalletLoading } = useWalletSummary();
-  const { data: virtualAccount, isLoading: isAccountLoading } = useVirtualAccount();
   const { data: dashboardData, isLoading: isDashboardLoading } = useDashboardData(currentCircleId || "");
   const { data: groupDetails, isLoading: isDetailsLoading } = useGroupDetails(currentCircleId || "");
   const { data: transactions, isLoading: isTxLoading } = useAccountTransactions();
 
-  const isLoading = isWalletLoading || isAccountLoading || isCirclesLoading || isDashboardLoading || isDetailsLoading || isTxLoading;
+  const isLoading = isWalletLoading || isCirclesLoading || isDashboardLoading || isDetailsLoading || isTxLoading;
 
   if (isLoading) {
     return (
@@ -33,7 +32,11 @@ export default function WalletDashboard() {
 
   // Fallback defaults
   const summary = walletSummary || { availableBalance: 0, totalContributed: 0, nextPayout: 0 };
-  const bankAccount = virtualAccount || { bank: "Ajo Vault Bank", accountNumber: "Unavailable", accountName: "Ajo Vault User" };
+  const bankAccount = {
+    bank: groupDetails?.dvaBankName || "—",
+    accountNumber: groupDetails?.dvaAccountNumber || "—",
+    accountName: groupDetails?.dvaAccountName || "—",
+  };
 
   const activeGroupDetails = groupDetails || { name: "Active Group", contributionAmount: 0 };
   const payout = dashboardData?.payout || { recipientName: "No recipient", amount: 0, daysRemaining: 0 };
