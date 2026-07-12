@@ -14,6 +14,7 @@ export const ENDPOINTS = {
     resetPassword: "/auth/reset-password",
     logout: "/auth/logout",
     refreshToken: "/auth/refresh-token",
+    provisionDva: "/auth/provision-dva",
   },
 
   account: {

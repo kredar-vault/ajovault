@@ -1,5 +1,6 @@
 import React from "react";
-import { Copy, Share2, ShieldCheck, ArrowDown, ArrowUp, Plus } from "lucide-react";
+import { Copy, Share2, ShieldCheck, ArrowDown, ArrowUp, Plus, Loader2, RefreshCw } from "lucide-react";
+import { useProvisionDva } from "@/hooks/useWallet";
 
 // 1. Quick Action Button Component
 interface ActionButtonProps {
@@ -61,9 +62,11 @@ export function ActivityRow({ title, timestamp, source, amount, type, status }: 
 
 // 3. Virtual Account Premium Panel Card
 export function VirtualAccountCard({ bank, accountNumber, accountName }: { bank: string; accountNumber: string; accountName: string }) {
+  const { mutate: provision, isPending } = useProvisionDva();
+  const isReady = accountNumber && accountNumber !== "—";
+
   return (
     <div className="bg-[#111827] rounded-2xl p-5 text-white flex flex-col justify-between relative overflow-hidden h-full shadow-sm">
-      {/* Decorative Building Icon Backing */}
       <div className="absolute right-4 top-4 text-white/10">
         <svg className="h-12 w-12" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 2L1 7v2h22V7L12 2zm0 18H3v-8h3v8zm5 0h-3v-8h3v8zm5 0h-3v-8h3v8zM2 22h20v2H2v-2z"/>
@@ -76,32 +79,50 @@ export function VirtualAccountCard({ bank, accountNumber, accountName }: { bank:
           <h3 className="text-xs font-bold tracking-tight mt-0.5">Dedicated Banking</h3>
         </div>
 
-        <div>
-          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Bank</span>
-          <p className="text-xs font-bold tracking-tight mt-0.5">{bank}</p>
-        </div>
-
-        <div>
-          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Account Number</span>
-          <div className="flex items-center gap-2 mt-0.5">
-            <p className="text-lg font-bold tracking-widest">{accountNumber}</p>
-            <button className="text-gray-400 hover:text-white transition-colors">
-              <Copy className="h-3.5 w-3.5" />
+        {!isReady ? (
+          <div className="space-y-3 py-2">
+            <p className="text-xs text-gray-400 font-medium">Your virtual account is not set up yet.</p>
+            <button
+              onClick={() => provision()}
+              disabled={isPending}
+              className="flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold transition-colors disabled:opacity-50"
+            >
+              {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+              {isPending ? "Setting up..." : "Set Up Virtual Account"}
             </button>
           </div>
-        </div>
+        ) : (
+          <>
+            <div>
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Bank</span>
+              <p className="text-xs font-bold tracking-tight mt-0.5">{bank}</p>
+            </div>
 
-        <div>
-          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Account Name</span>
-          <p className="text-xs font-bold tracking-tight mt-0.5 uppercase">{accountName}</p>
-        </div>
+            <div>
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Account Number</span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-lg font-bold tracking-widest">{accountNumber}</p>
+                <button className="text-gray-400 hover:text-white transition-colors">
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Account Name</span>
+              <p className="text-xs font-bold tracking-tight mt-0.5 uppercase">{accountName}</p>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-6 text-[10px] text-gray-400">
-        <button className="flex items-center gap-1 hover:text-white transition-colors font-bold">
-          <Share2 className="h-3 w-3" /> Share Details
-        </button>
-        <span className="text-[9px] opacity-60">Powered by Kredar</span>
+        {isReady && (
+          <button className="flex items-center gap-1 hover:text-white transition-colors font-bold">
+            <Share2 className="h-3 w-3" /> Share Details
+          </button>
+        )}
+        <span className="text-[9px] opacity-60 ml-auto">Powered by Kredar</span>
       </div>
     </div>
   );
