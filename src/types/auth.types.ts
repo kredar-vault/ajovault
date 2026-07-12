@@ -48,13 +48,31 @@ export interface ResendOtpRequest {
 
 export type ResendOtpResponse = ApiResult<object>;
 
-// --- Login ---
+// --- Login (2-step: password → OTP → token) ---
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
-export type LoginResponse = ApiResult<AuthData>;
+export interface LoginData {
+  email: string;
+  message: string;
+}
+
+export type LoginResponse = ApiResult<LoginData>;
+
+export interface VerifyLoginOtpRequest {
+  email: string;
+  otp: string;
+}
+
+export type VerifyLoginOtpResponse = ApiResult<AuthData>;
+
+export interface ResendLoginOtpRequest {
+  email: string;
+}
+
+export type ResendLoginOtpResponse = ApiResult<object>;
 
 // --- Forgot & Reset Password ---
 export interface ForgotPasswordRequest {
@@ -65,6 +83,7 @@ export type ForgotPasswordResponse = ApiResult<object>;
 
 export interface ResetPasswordRequest {
   email: string;
+  token: string;
   newPassword: string;
   confirmPassword: string;
 }

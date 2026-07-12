@@ -12,6 +12,7 @@ export function SignupForm() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -22,6 +23,7 @@ export function SignupForm() {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.name === "email") setEmailError("");
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -45,7 +47,12 @@ export function SignupForm() {
       toast.success("Check your email for a verification code.");
       router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
+      const msg: string = error?.response?.data?.message || "";
+      if (msg.toLowerCase().includes("already registered") || msg.toLowerCase().includes("already exist")) {
+        setEmailError("An account with this email already exists.");
+      } else {
+        toast.error(msg || "Registration failed. Please try again.");
+      }
     }
   };
 
@@ -77,8 +84,14 @@ export function SignupForm() {
             value={formData.email}
             onChange={handleChange}
             placeholder="john@example.com"
-            className="w-full rounded-lg border-0 bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 focus:ring-[#001E2C]"
+            className={`w-full rounded-lg border py-3 px-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:bg-gray-100/80 focus:ring-1 ${emailError ? "border-red-400 bg-red-50/40 focus:ring-red-400" : "border-0 bg-[#F1F5F9]/60 focus:ring-[#001E2C]"}`}
           />
+          {emailError && (
+            <p className="text-xs text-red-500 font-medium">
+              {emailError}{" "}
+              <Link href="/login" className="underline font-bold text-red-600">Sign in instead</Link>
+            </p>
+          )}
         </div>
 
         {/* Phone Number */}
