@@ -13,9 +13,9 @@ interface ResetPasswordProps {
 export function ResetPassword({ onPasswordResetComplete, tokenProp }: ResetPasswordProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = tokenProp || searchParams.get("token") || ""; // Grabs authentication token from prop or URL query string
+  const token = tokenProp || searchParams.get("token") || "";
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(searchParams.get("email") || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -44,6 +44,7 @@ export function ResetPassword({ onPasswordResetComplete, tokenProp }: ResetPassw
     resetPasswordMutation.mutate(
       {
         email,
+        token,
         newPassword: password,
         confirmPassword,
       },
