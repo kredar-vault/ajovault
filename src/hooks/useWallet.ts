@@ -28,11 +28,11 @@ export function useWalletSummary() {
   });
 }
 
-// 2. GET /wallet/virtual-account (Fetch user virtual account details)
+// 2. GET /wallet/dva (Fetch DVA — the Nomba account users send money to)
 export function useVirtualAccount() {
   return useQuery<ApiResult<VirtualAccountDetails>, Error, VirtualAccountDetails>({
     queryKey: queryKeys.wallet.virtualAccount,
-    queryFn: () => get<ApiResult<VirtualAccountDetails>>(ENDPOINTS.wallet.virtualAccount),
+    queryFn: () => get<ApiResult<VirtualAccountDetails>>(ENDPOINTS.wallet.dva),
     select: (res) => res.data,
   });
 }
@@ -42,15 +42,6 @@ export function useWalletBalance() {
   return useQuery<ApiResult<{ balance: number }>, Error, { balance: number }>({
     queryKey: queryKeys.wallet.balance,
     queryFn: () => get<ApiResult<{ balance: number }>>(ENDPOINTS.wallet.balance),
-    select: (res) => res.data,
-  });
-}
-
-// 4. GET /wallets/virtual-account (Fetch user virtual account details from wallets domain)
-export function useWalletsVirtualAccount() {
-  return useQuery<ApiResult<VirtualAccountDetails>, Error, VirtualAccountDetails>({
-    queryKey: queryKeys.virtualAccount.root,
-    queryFn: () => get<ApiResult<VirtualAccountDetails>>(ENDPOINTS.virtualAccounts.get),
     select: (res) => res.data,
   });
 }
@@ -67,7 +58,7 @@ export function useWithdraw() {
   });
 }
 
-// 6. POST /wallets/create-virtual-account (Save user's withdrawal bank account)
+// 6. POST /wallet/payout-account (Save the bank account withdrawals go to — Opay, GTBank etc.)
 export function useSetBankAccount() {
   const queryClient = useQueryClient();
   return useMutation<
@@ -76,11 +67,10 @@ export function useSetBankAccount() {
     { accountNumber: string; accountName: string; bankCode: string }
   >({
     mutationFn: (body) =>
-      post<ApiResult<VirtualAccountDetails>, typeof body>(ENDPOINTS.virtualAccounts.create, body),
+      post<ApiResult<VirtualAccountDetails>, typeof body>(ENDPOINTS.wallet.payoutAccount, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.wallet.root });
       queryClient.invalidateQueries({ queryKey: queryKeys.wallet.virtualAccount });
-      queryClient.invalidateQueries({ queryKey: queryKeys.virtualAccount.root });
     },
   });
 }
@@ -93,12 +83,11 @@ export function useProvisionDva() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.wallet.root });
       queryClient.invalidateQueries({ queryKey: queryKeys.wallet.virtualAccount });
-      queryClient.invalidateQueries({ queryKey: queryKeys.virtualAccount.root });
     },
   });
 }
 
-// 8. POST /wallet/bank/lookup (Resolve account name from account number + bank code)
+// 8. POST /wallet/payout-account/lookup (Verify bank account name before saving)
 export function useLookupBank() {
   return useMutation<
     ApiResult<{ accountName: string; accountNumber: string; bankCode: string }>,
@@ -107,7 +96,7 @@ export function useLookupBank() {
   >({
     mutationFn: (body) =>
       post<ApiResult<{ accountName: string; accountNumber: string; bankCode: string }>, typeof body>(
-        ENDPOINTS.wallet.bankLookup,
+        ENDPOINTS.wallet.payoutAccountLookup,
         body
       ),
   });
