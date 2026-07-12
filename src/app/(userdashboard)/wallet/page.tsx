@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Plus, ArrowDown, ArrowUpRight, History, ShieldCheck, Loader2 } from "lucide-react";
 import { ActionButton, ActivityRow, VirtualAccountCard } from "@/components/userdashboard/wallet/WalletUI";
 import { WalletBalanceSummary } from "@/components/userdashboard/wallet/WalletBalanceSummary";
+import { DepositModal, WithdrawModal, SendPayoutModal } from "@/components/userdashboard/wallet/WalletModals";
 import { useWalletSummary, useVirtualAccount } from "@/hooks/useWallet";
 import { useCircle } from "../layout";
 import { useDashboardData } from "@/hooks/useDashboard";
@@ -11,7 +12,10 @@ import { useGroupDetails } from "@/hooks/useGroups";
 import { useAccountTransactions } from "@/hooks/useAccount";
 import type { ActivityItem } from "@/types";
 
+type ModalType = "deposit" | "withdraw" | "payout" | null;
+
 export default function WalletDashboard() {
+  const [activeModal, setActiveModal] = useState<ModalType>(null);
   const { currentCircleId, isLoading: isCirclesLoading } = useCircle();
 
   const { data: walletSummary, isLoading: isWalletLoading } = useWalletSummary();
@@ -66,6 +70,9 @@ export default function WalletDashboard() {
 
   return (
     <div className="w-full min-h-screen bg-[#FAFAFA] p-6 md:p-8 space-y-6 font-sans">
+      {activeModal === "deposit" && <DepositModal virtualAccount={virtualAccount} onClose={() => setActiveModal(null)} />}
+      {activeModal === "withdraw" && <WithdrawModal balance={summary.availableBalance} onClose={() => setActiveModal(null)} />}
+      {activeModal === "payout" && <SendPayoutModal onClose={() => setActiveModal(null)} />}
       
       {/* Page Title Header */}
       <div>
@@ -88,10 +95,10 @@ export default function WalletDashboard() {
 
           {/* Quick Action Matrix Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <ActionButton label="Deposit" icon={<Plus className="h-4 w-4" />} />
-            <ActionButton label="Withdraw" icon={<ArrowDown className="h-4 w-4" />} />
-            <ActionButton label="Send Payout" icon={<ArrowUpRight className="h-4 w-4" />} />
-            <ActionButton label="History" icon={<History className="h-4 w-4" />} />
+            <ActionButton label="Deposit" icon={<Plus className="h-4 w-4" />} onClick={() => setActiveModal("deposit")} />
+            <ActionButton label="Withdraw" icon={<ArrowDown className="h-4 w-4" />} onClick={() => setActiveModal("withdraw")} />
+            <ActionButton label="Send Payout" icon={<ArrowUpRight className="h-4 w-4" />} onClick={() => setActiveModal("payout")} />
+            <ActionButton label="History" icon={<History className="h-4 w-4" />} onClick={() => document.querySelector("#recent-activity")?.scrollIntoView({ behavior: "smooth" })} />
           </div>
 
         </div>
@@ -111,7 +118,7 @@ export default function WalletDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* Recent Activity Window Block */}
-        <div className="lg:col-span-8 bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.01)] space-y-4">
+        <div id="recent-activity" className="lg:col-span-8 bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.01)] space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#111827]">Recent Activity</h3>
             <button className="text-xs font-bold text-[#006C49] hover:underline">View All</button>

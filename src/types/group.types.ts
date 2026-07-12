@@ -30,6 +30,7 @@ export interface Group {
   name: string;
   purpose: string;
   creatorId: string;
+  status?: string;
   expectedMembers: number;
   frequency: GroupFrequency;
   contributionAmount: number;

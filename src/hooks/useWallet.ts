@@ -42,7 +42,19 @@ export function useWalletsVirtualAccount() {
   });
 }
 
-// 5. POST /wallets/create-virtual-account (Trigger creation of a virtual bank account)
+// 5. POST /wallet/withdraw
+export function useWithdraw() {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResult<unknown>, Error, { amount: number }>({
+    mutationFn: (body) => post<ApiResult<unknown>, { amount: number }>(ENDPOINTS.wallet.withdraw, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.wallet.root });
+      queryClient.invalidateQueries({ queryKey: queryKeys.wallet.balance });
+    },
+  });
+}
+
+// 6. POST /wallets/create-virtual-account (Trigger creation of a virtual bank account)
 export function useCreateVirtualAccount() {
   const queryClient = useQueryClient();
   return useMutation<ApiResult<VirtualAccountDetails>, Error, void>({
