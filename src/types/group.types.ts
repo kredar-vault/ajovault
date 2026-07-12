@@ -37,6 +37,10 @@ export interface Group {
   inviteCode?: string;
   createdAt: string;
   updatedAt: string;
+  // DVA provisioned by Kredar at group creation
+  dvaAccountNumber?: string;
+  dvaBankName?: string;
+  dvaAccountName?: string;
 }
 
 export interface GroupSettings {
