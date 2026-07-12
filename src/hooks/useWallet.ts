@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { get, post } from "../lib/http";
 import { ENDPOINTS } from "./endpoints";
 import { queryKeys } from "../api/queryKey";
-import type { ApiResult, WalletSummary, VirtualAccountDetails } from "../types";
+import type { ApiResult, WalletSummary, VirtualAccountDetails, BankAccount } from "../types";
 
 // 1. GET /wallet (Fetch wallet balance summary)
 export function useWalletSummary() {
@@ -18,6 +18,12 @@ export function useWalletSummary() {
       nextPayout: 0,
       activeGroups: res.data?.activeGroups ?? 0,
       totalGroups: res.data?.totalGroups ?? 0,
+      bankAccount: res.data?.virtualAccount ? {
+        accountNumber: res.data.virtualAccount.accountNumber ?? "",
+        accountName: res.data.virtualAccount.accountName ?? "",
+        bankCode: res.data.virtualAccount.bankCode ?? "",
+        isSet: res.data.virtualAccount.isSet ?? false,
+      } as BankAccount : undefined,
     }),
   });
 }
@@ -61,16 +67,35 @@ export function useWithdraw() {
   });
 }
 
-// 6. POST /wallets/create-virtual-account (Trigger creation of a virtual bank account)
-export function useCreateVirtualAccount() {
+// 6. POST /wallets/create-virtual-account (Save user's withdrawal bank account)
+export function useSetBankAccount() {
   const queryClient = useQueryClient();
-  return useMutation<ApiResult<VirtualAccountDetails>, Error, void>({
-    mutationFn: () =>
-      post<ApiResult<VirtualAccountDetails>>(ENDPOINTS.virtualAccounts.create),
+  return useMutation<
+    ApiResult<VirtualAccountDetails>,
+    Error,
+    { accountNumber: string; accountName: string; bankCode: string }
+  >({
+    mutationFn: (body) =>
+      post<ApiResult<VirtualAccountDetails>, typeof body>(ENDPOINTS.virtualAccounts.create, body),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.virtualAccount.root });
-      queryClient.invalidateQueries({ queryKey: queryKeys.wallet.virtualAccount });
       queryClient.invalidateQueries({ queryKey: queryKeys.wallet.root });
+      queryClient.invalidateQueries({ queryKey: queryKeys.wallet.virtualAccount });
+      queryClient.invalidateQueries({ queryKey: queryKeys.virtualAccount.root });
     },
+  });
+}
+
+// 7. POST /wallet/bank/lookup (Resolve account name from account number + bank code)
+export function useLookupBank() {
+  return useMutation<
+    ApiResult<{ accountName: string; accountNumber: string; bankCode: string }>,
+    Error,
+    { accountNumber: string; bankCode: string }
+  >({
+    mutationFn: (body) =>
+      post<ApiResult<{ accountName: string; accountNumber: string; bankCode: string }>, typeof body>(
+        ENDPOINTS.wallet.bankLookup,
+        body
+      ),
   });
 }

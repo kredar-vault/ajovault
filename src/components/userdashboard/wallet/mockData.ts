@@ -1,6 +1,6 @@
 import { WalletSummary, MonthlyPaidStatus, VirtualAccountDetails, ActivityItem, NextGroupPayout } from "@/types";
 
-export const walletSummaryMock: WalletSummary = { availableBalance: 40000, totalContributed: 120000, nextPayout: 400000 };
+export const walletSummaryMock: WalletSummary = { availableBalance: 40000, totalContributed: 120000, totalReceived: 0, nextPayout: 400000, activeGroups: 1, totalGroups: 1 };
 export const paidStatusMock: MonthlyPaidStatus = { amount: 20000, dueDate: "15 July", nextRecipient: "John Doe" };
 export const accountDetailsMock: VirtualAccountDetails = { bank: "Nomba", accountNumber: "1234567890", accountName: "JOHN DOE" };
 
