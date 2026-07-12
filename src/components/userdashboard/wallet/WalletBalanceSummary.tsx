@@ -32,16 +32,16 @@ export function WalletBalanceSummary({
       <div className="sm:col-span-7 bg-white border border-gray-100 rounded-3xl p-6 flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.01)] min-h-[180px]">
         <div>
           <span className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider block">Available Balance</span>
-          <h2 className="text-3xl font-bold text-[#111827] mt-2 tracking-tight">₦{summary.availableBalance.toLocaleString()}</h2>
+          <h2 className="text-3xl font-bold text-[#111827] mt-2 tracking-tight">₦{(summary.availableBalance ?? 0).toLocaleString()}</h2>
         </div>
         <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4 mt-4">
           <div>
             <span className="text-[9px] font-bold text-[#9CA3AF] uppercase tracking-wider block">Total Contributed</span>
-            <p className="text-sm font-bold text-[#111827] mt-0.5">₦{summary.totalContributed.toLocaleString()}</p>
+            <p className="text-sm font-bold text-[#111827] mt-0.5">₦{(summary.totalContributed ?? 0).toLocaleString()}</p>
           </div>
           <div>
             <span className="text-[9px] font-bold text-[#9CA3AF] uppercase tracking-wider block">Next Payout</span>
-            <p className="text-sm font-bold text-[#006C49] mt-0.5">₦{summary.nextPayout.toLocaleString()}</p>
+            <p className="text-sm font-bold text-[#006C49] mt-0.5">₦{(summary.nextPayout ?? 0).toLocaleString()}</p>
           </div>
         </div>
       </div>
