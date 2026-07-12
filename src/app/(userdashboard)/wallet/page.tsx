@@ -33,7 +33,11 @@ export default function WalletDashboard() {
 
   // Fallback defaults
   const summary = walletSummary || { availableBalance: 0, totalContributed: 0, nextPayout: 0 };
-  const bankAccount = virtualAccount || { bank: "Ajo Vault Bank", accountNumber: "Unavailable", accountName: "Ajo Vault User" };
+  const bankAccount = {
+    bank: virtualAccount?.bank || "—",
+    accountNumber: virtualAccount?.accountNumber || "—",
+    accountName: virtualAccount?.accountName || "—",
+  };
 
   const activeGroupDetails = groupDetails || { name: "Active Group", contributionAmount: 0 };
   const payout = dashboardData?.payout || { recipientName: "No recipient", amount: 0, daysRemaining: 0 };
