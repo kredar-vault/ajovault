@@ -8,10 +8,17 @@ import type { ApiResult, WalletSummary, VirtualAccountDetails } from "../types";
 
 // 1. GET /wallet (Fetch wallet balance summary)
 export function useWalletSummary() {
-  return useQuery<ApiResult<WalletSummary>, Error, WalletSummary>({
+  return useQuery<ApiResult<any>, Error, WalletSummary>({
     queryKey: queryKeys.wallet.root,
-    queryFn: () => get<ApiResult<WalletSummary>>(ENDPOINTS.wallet.root),
-    select: (res) => res.data,
+    queryFn: () => get<ApiResult<any>>(ENDPOINTS.wallet.root),
+    select: (res) => ({
+      availableBalance: res.data?.balance ?? 0,
+      totalContributed: res.data?.totalOut ?? 0,
+      totalReceived: res.data?.totalIn ?? 0,
+      nextPayout: 0,
+      activeGroups: res.data?.activeGroups ?? 0,
+      totalGroups: res.data?.totalGroups ?? 0,
+    }),
   });
 }
 

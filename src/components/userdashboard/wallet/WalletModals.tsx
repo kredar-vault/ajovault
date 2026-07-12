@@ -74,7 +74,7 @@ export function DepositModal({ onClose, virtualAccount }: ModalProps & { virtual
 }
 
 // ── Withdraw Modal ────────────────────────────────────────────────────────────
-export function WithdrawModal({ onClose, balance }: ModalProps & { balance: number }) {
+export function WithdrawModal({ onClose, balance = 0 }: ModalProps & { balance: number }) {
   const [amount, setAmount] = useState("");
   const [success, setSuccess] = useState(false);
   const { mutateAsync, isPending, error } = useWithdraw();
@@ -147,12 +147,13 @@ export function WithdrawModal({ onClose, balance }: ModalProps & { balance: numb
 }
 
 // ── Send Payout (Contribute) Modal ────────────────────────────────────────────
-export function SendPayoutModal({ onClose }: ModalProps) {
+export function SendPayoutModal({ onClose, balance = 0 }: ModalProps & { balance: number }) {
   const { data: groups, isLoading } = useMyGroups();
   const [selectedGroupId, setSelectedGroupId] = useState("");
   const [success, setSuccess] = useState(false);
   const selectedGroup = groups?.find((g: Group) => g.id === selectedGroupId);
   const { mutateAsync, isPending, error } = useCreateContribution(selectedGroupId);
+  const hasEnough = !selectedGroup || balance >= (selectedGroup.contributionAmount ?? 0);
 
   const handleSubmit = async () => {
     if (!selectedGroupId) return;
@@ -187,9 +188,10 @@ export function SendPayoutModal({ onClose }: ModalProps) {
 
   return (
     <Modal onClose={onClose} title="Send to Savings">
-      <p className="text-xs text-[#6B7280] font-medium leading-relaxed">
-        Select a savings circle to contribute to. The contribution amount is set by the group.
-      </p>
+      <div className="bg-[#F8FAFC] rounded-2xl p-3 border border-gray-100 text-center">
+        <span className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider block">Wallet Balance</span>
+        <span className="text-xl font-bold text-[#111827]">₦{balance.toLocaleString()}</span>
+      </div>
 
       <div className="space-y-4">
         <div>
@@ -219,13 +221,19 @@ export function SendPayoutModal({ onClose }: ModalProps) {
           </div>
         )}
 
+        {!hasEnough && selectedGroup && (
+          <p className="text-xs text-red-500 font-medium">
+            Insufficient balance. Deposit ₦{((selectedGroup.contributionAmount ?? 0) - balance).toLocaleString()} more to your virtual account first.
+          </p>
+        )}
+
         {error && (
           <p className="text-xs text-red-500 font-medium">{(error as Error).message}</p>
         )}
 
         <button
           onClick={handleSubmit}
-          disabled={isPending || !selectedGroupId}
+          disabled={isPending || !selectedGroupId || !hasEnough}
           className="w-full bg-[#006C49] text-white text-sm font-bold rounded-2xl py-3 hover:bg-[#005a3d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
