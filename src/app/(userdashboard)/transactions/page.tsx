@@ -2,22 +2,22 @@
 
 import React, { useState, useEffect } from "react";
 import { Search, SlidersHorizontal, Download, Loader2 } from "lucide-react";
-import { useAccountTransactions } from "@/hooks/useAccount";
+import { useAllTransactions } from "@/hooks/useTransactions";
 import type { Transaction } from "@/types";
 import { MetricCard } from "@/components/userdashboard/transcations/badges";
 import { TransactionRow } from "@/components/userdashboard/transcations/TranscationRow";
 import { TransactionDetailsSidebar } from "@/components/userdashboard/transcations/TransactionDetails";
 
 export default function TransactionsDashboard() {
-  const { data: transactions, isLoading } = useAccountTransactions();
+  const { data: rawTransactions, isLoading } = useAllTransactions();
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
 
   // Set the first transaction as selected by default once loaded
   useEffect(() => {
-    if (transactions && transactions.length > 0 && !selectedTx) {
-      setSelectedTx(transactions[0]);
+    if (txList.length > 0 && !selectedTx) {
+      setSelectedTx(txList[0]);
     }
-  }, [transactions, selectedTx]);
+  }, [rawTransactions, selectedTx]);
 
   if (isLoading) {
     return (
@@ -28,7 +28,19 @@ export default function TransactionsDashboard() {
     );
   }
 
-  const txList = transactions || [];
+  const txList: Transaction[] = (rawTransactions || []).map((tx: any) => ({
+    id: tx.id,
+    title: tx.description || tx.title || "Transfer",
+    type: (tx.direction === "In" || tx.type === "Incoming") ? "Incoming" : "Outgoing",
+    status: (tx.status as Transaction["status"]) || "Completed",
+    amount: tx.amount,
+    date: tx.occurredAt ? new Date(tx.occurredAt).toLocaleDateString("en-NG", { dateStyle: "medium" }) : (tx.date || ""),
+    timestamp: tx.occurredAt ? new Date(tx.occurredAt).toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" }) : (tx.timestamp || ""),
+    reference: tx.reference || "",
+    sender: tx.groupName || tx.sender || "Personal",
+    bank: tx.bank || "",
+    narration: tx.description || tx.narration || "",
+  }));
 
   // Calculate stats dynamically
   const incomingSum = txList
