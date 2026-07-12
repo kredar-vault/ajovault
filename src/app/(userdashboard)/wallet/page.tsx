@@ -9,7 +9,7 @@ import { useWalletSummary, useVirtualAccount } from "@/hooks/useWallet";
 import { useCircle } from "../layout";
 import { useDashboardData } from "@/hooks/useDashboard";
 import { useGroupDetails } from "@/hooks/useGroups";
-import { useAccountTransactions } from "@/hooks/useAccount";
+import { useAllTransactions } from "@/hooks/useTransactions";
 import type { ActivityItem } from "@/types";
 
 type ModalType = "deposit" | "withdraw" | "payout" | null;
@@ -22,7 +22,7 @@ export default function WalletDashboard() {
   const { data: virtualAccount, isLoading: isAccountLoading } = useVirtualAccount();
   const { data: dashboardData, isLoading: isDashboardLoading } = useDashboardData(currentCircleId || "");
   const { data: groupDetails, isLoading: isDetailsLoading } = useGroupDetails(currentCircleId || "");
-  const { data: transactions, isLoading: isTxLoading } = useAccountTransactions();
+  const { data: transactions, isLoading: isTxLoading } = useAllTransactions();
 
   const isLoading = isWalletLoading || isAccountLoading || isCirclesLoading || isDashboardLoading || isDetailsLoading || isTxLoading;
 
@@ -51,14 +51,14 @@ export default function WalletDashboard() {
   const progressPercent = totalPayoutMembers > 0 ? (progress.receivedCount / totalPayoutMembers) * 100 : 0;
 
   // Map first 4 transactions to recent activities
-  const recentActivities: ActivityItem[] = (transactions || []).slice(0, 4).map((tx) => ({
+  const recentActivities: ActivityItem[] = (transactions || []).slice(0, 4).map((tx: any) => ({
     id: tx.id,
-    title: tx.title || tx.narration || "Transfer",
-    timestamp: tx.date || "Just now",
-    source: tx.sender || "System",
+    title: tx.description || tx.title || "Transfer",
+    timestamp: tx.occurredAt ? new Date(tx.occurredAt).toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" }) : (tx.date || "Just now"),
+    source: tx.groupName || tx.sender || "Personal",
     amount: tx.amount,
-    type: tx.type === "Incoming" ? "credit" : "debit",
-    status: tx.status
+    type: (tx.direction === "In" || tx.type === "Incoming") ? "credit" : "debit",
+    status: tx.status || "Completed"
   }));
 
   const initials = payout.recipientName
