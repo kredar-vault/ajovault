@@ -162,3 +162,27 @@ export function useUpdateMemberRole(groupId: string) {
     },
   });
 }
+
+// 14. POST /groups/{groupId}/leave
+export function useLeaveGroup(groupId: string) {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResult<unknown>, Error, void>({
+    mutationFn: () => post<ApiResult<unknown>>(ENDPOINTS.groups.leave(groupId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.groups.list });
+      queryClient.invalidateQueries({ queryKey: queryKeys.groups.mine });
+    },
+  });
+}
+
+// 15. DELETE /groups/{groupId}
+export function useDeleteGroup(groupId: string) {
+  const queryClient = useQueryClient();
+  return useMutation<ApiResult<unknown>, Error, void>({
+    mutationFn: () => del<ApiResult<unknown>>(ENDPOINTS.groups.delete(groupId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.groups.list });
+      queryClient.invalidateQueries({ queryKey: queryKeys.groups.mine });
+    },
+  });
+}

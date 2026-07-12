@@ -7,9 +7,7 @@ import { queryKeys } from "../api/queryKey";
 import type { ApiResult, ContributionItem } from "../types";
 
 export interface CreateContributionPayload {
-  amount: number;
-  reference?: string;
-  pin?: string;
+  cycleNumber?: number;
 }
 
 // 1. GET /contributions (Fetch all user contributions)
