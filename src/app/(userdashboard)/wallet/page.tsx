@@ -72,7 +72,7 @@ export default function WalletDashboard() {
     <div className="w-full min-h-screen bg-[#FAFAFA] p-6 md:p-8 space-y-6 font-sans">
       {activeModal === "deposit" && <DepositModal virtualAccount={virtualAccount} onClose={() => setActiveModal(null)} />}
       {activeModal === "withdraw" && <WithdrawModal balance={summary.availableBalance} onClose={() => setActiveModal(null)} />}
-      {activeModal === "payout" && <SendPayoutModal balance={summary.availableBalance} onClose={() => setActiveModal(null)} />}}
+      {activeModal === "payout" && <SendPayoutModal balance={summary.availableBalance} onClose={() => setActiveModal(null)} />}
       
       {/* Page Title Header */}
       <div>
