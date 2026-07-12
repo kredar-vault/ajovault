@@ -52,6 +52,7 @@ export const ENDPOINTS = {
     balance: "/wallet/balance",
     virtualAccount: "/wallet/virtual-account",
     withdraw: "/wallet/withdraw",
+    bankLookup: "/wallet/bank/lookup",
   },
 
   transactions: {

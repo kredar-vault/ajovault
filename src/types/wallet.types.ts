@@ -1,3 +1,10 @@
+export interface BankAccount {
+  accountNumber: string;
+  accountName: string;
+  bankCode: string;
+  isSet: boolean;
+}
+
 export interface WalletSummary {
   availableBalance: number;
   totalContributed: number;
@@ -5,6 +12,7 @@ export interface WalletSummary {
   nextPayout: number;
   activeGroups: number;
   totalGroups: number;
+  bankAccount?: BankAccount;
 }
 
 export interface MonthlyPaidStatus {
