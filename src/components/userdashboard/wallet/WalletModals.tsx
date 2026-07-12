@@ -74,7 +74,7 @@ export function DepositModal({ onClose, virtualAccount }: ModalProps & { virtual
 }
 
 // ── Withdraw Modal ────────────────────────────────────────────────────────────
-export function WithdrawModal({ onClose, balance }: ModalProps & { balance: number }) {
+export function WithdrawModal({ onClose, balance = 0 }: ModalProps & { balance: number }) {
   const [amount, setAmount] = useState("");
   const [success, setSuccess] = useState(false);
   const { mutateAsync, isPending, error } = useWithdraw();
@@ -147,7 +147,7 @@ export function WithdrawModal({ onClose, balance }: ModalProps & { balance: numb
 }
 
 // ── Send Payout (Contribute) Modal ────────────────────────────────────────────
-export function SendPayoutModal({ onClose, balance }: ModalProps & { balance: number }) {
+export function SendPayoutModal({ onClose, balance = 0 }: ModalProps & { balance: number }) {
   const { data: groups, isLoading } = useMyGroups();
   const [selectedGroupId, setSelectedGroupId] = useState("");
   const [success, setSuccess] = useState(false);

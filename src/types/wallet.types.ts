@@ -1,7 +1,10 @@
 export interface WalletSummary {
   availableBalance: number;
   totalContributed: number;
+  totalReceived: number;
   nextPayout: number;
+  activeGroups: number;
+  totalGroups: number;
 }
 
 export interface MonthlyPaidStatus {
