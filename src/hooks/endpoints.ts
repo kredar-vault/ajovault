@@ -28,6 +28,8 @@ export const ENDPOINTS = {
     mine: "/groups/mine",
     byId: (id: string) => `/groups/${id}`,
     join: (id: string) => `/groups/${id}/join`,
+    leave: (id: string) => `/groups/${id}/leave`,
+    delete: (id: string) => `/groups/${id}`,
     joinWithCode: (inviteCode: string) => `/groups/join/${inviteCode}`,
     invite: (id: string) => `/groups/${id}/invite`,
     settings: (groupId: string) => `/groups/${groupId}/settings`,
