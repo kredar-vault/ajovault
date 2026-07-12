@@ -9,7 +9,7 @@ import { useLogin, useVerifyLoginOtp, useSignup, useVerifyOtp } from "@/hooks/us
 import { useJoinGroupByInvite } from "@/hooks/useGroups";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Loader2, CheckCircle2, Users, ArrowRight, ChevronLeft } from "lucide-react";
+import { Loader2, CheckCircle2, Users, ArrowRight, ChevronLeft, Eye, EyeOff } from "lucide-react";
 
 type Step = "landing" | "email" | "password" | "create-account" | "otp" | "success";
 
@@ -32,12 +32,15 @@ export default function JoinPage() {
   // Login state
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   // Signup extra fields
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
 
   const loginMutation = useLogin();
@@ -302,9 +305,14 @@ export default function JoinPage() {
             <form className="space-y-4" onSubmit={handleSignIn}>
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-gray-700">Password</label>
-                <input type="password" required autoFocus value={password}
-                  onChange={(e) => setPassword(e.target.value)} placeholder="••••••••"
-                  className="w-full rounded-lg bg-[#F1F5F9]/60 py-3.5 px-4 text-sm text-gray-900 outline-none border-0 focus:ring-2 focus:ring-[#006C49]" />
+                <div className="relative flex items-center">
+                  <input type={showPassword ? "text" : "password"} required autoFocus value={password}
+                    onChange={(e) => setPassword(e.target.value)} placeholder="••••••••"
+                    className="w-full rounded-lg bg-[#F1F5F9]/60 py-3.5 pl-4 pr-11 text-sm text-gray-900 outline-none border-0 focus:ring-2 focus:ring-[#006C49]" />
+                  <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3.5 text-gray-400 hover:text-gray-600">
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               <button type="submit" disabled={loginMutation.isPending}
                 className="w-full py-3.5 bg-[#006C49] hover:bg-[#005439] text-white rounded-lg text-sm font-bold transition-all disabled:opacity-60 flex items-center justify-center gap-2">
@@ -357,13 +365,23 @@ export default function JoinPage() {
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-gray-700">Password</label>
-                <input type="password" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••"
-                  className="w-full rounded-lg bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none border-0 focus:ring-2 focus:ring-[#006C49]" />
+                <div className="relative flex items-center">
+                  <input type={showNewPassword ? "text" : "password"} required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••"
+                    className="w-full rounded-lg bg-[#F1F5F9]/60 py-3 pl-4 pr-11 text-sm text-gray-900 outline-none border-0 focus:ring-2 focus:ring-[#006C49]" />
+                  <button type="button" onClick={() => setShowNewPassword(v => !v)} className="absolute right-3.5 text-gray-400 hover:text-gray-600">
+                    {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-gray-700">Confirm Password</label>
-                <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••"
-                  className="w-full rounded-lg bg-[#F1F5F9]/60 py-3 px-4 text-sm text-gray-900 outline-none border-0 focus:ring-2 focus:ring-[#006C49]" />
+                <div className="relative flex items-center">
+                  <input type={showConfirmPassword ? "text" : "password"} required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••"
+                    className="w-full rounded-lg bg-[#F1F5F9]/60 py-3 pl-4 pr-11 text-sm text-gray-900 outline-none border-0 focus:ring-2 focus:ring-[#006C49]" />
+                  <button type="button" onClick={() => setShowConfirmPassword(v => !v)} className="absolute right-3.5 text-gray-400 hover:text-gray-600">
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
               <button type="submit" disabled={signupMutation.isPending}
                 className="w-full py-3.5 bg-[#006C49] hover:bg-[#005439] text-white rounded-lg text-sm font-bold transition-all disabled:opacity-60 flex items-center justify-center gap-2">
