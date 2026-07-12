@@ -1,6 +1,5 @@
 import React from "react";
-import { Copy, Share2, ShieldCheck, ArrowDown, ArrowUp, Plus, Loader2, RefreshCw } from "lucide-react";
-import { useProvisionDva } from "@/hooks/useWallet";
+import { Copy, Share2, ShieldCheck, ArrowDown, ArrowUp, Plus, Loader2 } from "lucide-react";
 
 // 1. Quick Action Button Component
 interface ActionButtonProps {
@@ -62,7 +61,6 @@ export function ActivityRow({ title, timestamp, source, amount, type, status }: 
 
 // 3. Virtual Account Premium Panel Card
 export function VirtualAccountCard({ bank, accountNumber, accountName }: { bank: string; accountNumber: string; accountName: string }) {
-  const { mutate: provision, isPending } = useProvisionDva();
   const isReady = accountNumber && accountNumber !== "—";
 
   return (
@@ -80,16 +78,9 @@ export function VirtualAccountCard({ bank, accountNumber, accountName }: { bank:
         </div>
 
         {!isReady ? (
-          <div className="space-y-3 py-2">
-            <p className="text-xs text-gray-400 font-medium">Your virtual account is not set up yet.</p>
-            <button
-              onClick={() => provision()}
-              disabled={isPending}
-              className="flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold transition-colors disabled:opacity-50"
-            >
-              {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
-              {isPending ? "Setting up..." : "Set Up Virtual Account"}
-            </button>
+          <div className="flex items-center gap-2 py-2 text-gray-400">
+            <Loader2 className="h-3.5 w-3.5 animate-spin flex-shrink-0" />
+            <p className="text-xs font-medium">Setting up your account...</p>
           </div>
         ) : (
           <>
