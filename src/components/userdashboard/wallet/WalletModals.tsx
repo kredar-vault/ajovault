@@ -103,6 +103,7 @@ export function WithdrawModal({ onClose, balance = 0, bankAccount }: ModalProps 
   const [accountNumber, setAccountNumber] = useState("");
   const [bankCode, setBankCode] = useState("");
   const [resolvedName, setResolvedName] = useState<string | null>(null);
+  const [manualName, setManualName] = useState("");
   const { mutateAsync: lookup, isPending: isLooking, error: lookupError } = useLookupBank();
   const { mutateAsync: saveBank, isPending: isSaving } = useSetBankAccount();
 
@@ -126,8 +127,9 @@ export function WithdrawModal({ onClose, balance = 0, bankAccount }: ModalProps 
   };
 
   const handleSaveBank = async () => {
-    if (!resolvedName) return;
-    await saveBank({ accountNumber, bankCode, accountName: resolvedName });
+    const nameToSave = resolvedName ?? manualName.trim();
+    if (!nameToSave) return;
+    await saveBank({ accountNumber, bankCode, accountName: nameToSave });
     setStep("amount");
   };
 
@@ -173,7 +175,7 @@ export function WithdrawModal({ onClose, balance = 0, bankAccount }: ModalProps 
               inputMode="numeric"
               maxLength={10}
               value={accountNumber}
-              onChange={(e) => { setAccountNumber(e.target.value.replace(/\D/g, "")); setResolvedName(null); }}
+              onChange={(e) => { setAccountNumber(e.target.value.replace(/\D/g, "")); setResolvedName(null); setManualName(""); }}
               placeholder="0123456789"
               className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#006C49]/30 focus:border-[#006C49]"
             />
@@ -183,7 +185,7 @@ export function WithdrawModal({ onClose, balance = 0, bankAccount }: ModalProps 
             <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block mb-1.5">Bank</label>
             <select
               value={bankCode}
-              onChange={(e) => { setBankCode(e.target.value); setResolvedName(null); }}
+              onChange={(e) => { setBankCode(e.target.value); setResolvedName(null); setManualName(""); }}
               className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm font-medium text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#006C49]/30 focus:border-[#006C49] bg-white"
             >
               <option value="">Select your bank</option>
@@ -193,8 +195,20 @@ export function WithdrawModal({ onClose, balance = 0, bankAccount }: ModalProps 
             </select>
           </div>
 
-          {lookupError && (
-            <p className="text-xs text-red-500 font-medium">{(lookupError as Error).message}</p>
+          {lookupError && !resolvedName && (
+            <div className="space-y-2">
+              <p className="text-xs text-amber-600 font-medium">Could not auto-verify this account. Enter your account name to proceed.</p>
+              <div>
+                <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block mb-1.5">Account Name</label>
+                <input
+                  type="text"
+                  value={manualName}
+                  onChange={(e) => setManualName(e.target.value)}
+                  placeholder="e.g. GOSPEL MAIRO"
+                  className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#006C49]/30 focus:border-[#006C49]"
+                />
+              </div>
+            </div>
           )}
 
           {resolvedName && (
@@ -207,7 +221,7 @@ export function WithdrawModal({ onClose, balance = 0, bankAccount }: ModalProps 
             </div>
           )}
 
-          {!resolvedName ? (
+          {!resolvedName && !manualName.trim() ? (
             <button
               onClick={handleLookup}
               disabled={isLooking || accountNumber.length < 10 || !bankCode}
@@ -232,7 +246,7 @@ export function WithdrawModal({ onClose, balance = 0, bankAccount }: ModalProps 
   }
 
   // Step 2: Enter amount to withdraw
-  const displayAccount = hasBank ? bankAccount : { accountNumber, accountName: resolvedName ?? "", bankCode };
+  const displayAccount = hasBank ? bankAccount : { accountNumber, accountName: resolvedName ?? manualName ?? "", bankCode };
   const bankName = NIGERIAN_BANKS.find((b) => b.code === (displayAccount?.bankCode ?? bankCode))?.name ?? displayAccount?.bankCode;
 
   return (
