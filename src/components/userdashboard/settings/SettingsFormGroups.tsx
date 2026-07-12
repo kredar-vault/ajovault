@@ -25,7 +25,6 @@ interface SettingsFormGroupsProps {
   setNotifications: (v: any) => void;
   groupSettings: any;
   groupId: string;
-  isCreator: boolean;
 }
 
 export function SettingsFormGroups({
@@ -47,7 +46,6 @@ export function SettingsFormGroups({
   setNotifications,
   groupSettings,
   groupId,
-  isCreator,
 }: SettingsFormGroupsProps) {
   const router = useRouter();
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -297,7 +295,6 @@ export function SettingsFormGroups({
         </div>
         
         <div className="divide-y divide-red-100/60 pt-2">
-          {!isCreator && (
           <div className="flex items-center justify-between py-3">
             <div>
               <h4 className="text-xs font-bold text-red-900 tracking-tight">Leave Circle</h4>
@@ -313,14 +310,17 @@ export function SettingsFormGroups({
               Leave
             </button>
           </div>
-          )}
 
           <div className="flex items-center justify-between py-3">
             <div>
               <h4 className="text-xs font-bold text-red-900 tracking-tight">Transfer Ownership</h4>
               <p className="text-[10px] text-red-700/70 font-medium mt-0.5">Appoint another workspace identity as group supreme controller.</p>
             </div>
-            <button type="button" className="px-3 py-1.5 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-xl hover:bg-red-50 transition-all">
+            <button
+              type="button"
+              onClick={() => alert("Transfer ownership coming soon.")}
+              className="px-3 py-1.5 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-xl hover:bg-red-50 transition-all"
+            >
               Transfer
             </button>
           </div>
@@ -330,12 +330,15 @@ export function SettingsFormGroups({
               <h4 className="text-xs font-bold text-red-900 tracking-tight">Archive Circle</h4>
               <p className="text-[10px] text-red-700/70 font-medium mt-0.5">Freeze all contribution modules and store state variables read-only.</p>
             </div>
-            <button type="button" className="px-3 py-1.5 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-xl hover:bg-red-50 transition-all">
+            <button
+              type="button"
+              onClick={() => alert("Archive circle coming soon.")}
+              className="px-3 py-1.5 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-xl hover:bg-red-50 transition-all"
+            >
               Archive
             </button>
           </div>
 
-          {isCreator && (
           <div className="flex items-center justify-between py-3">
             <div>
               <h4 className="text-xs font-bold text-red-900 tracking-tight">Delete Circle</h4>
@@ -353,7 +356,6 @@ export function SettingsFormGroups({
               {confirmDelete ? "Confirm Delete" : "Delete Circle"}
             </button>
           </div>
-          )}
         </div>
       </div>
     </>
