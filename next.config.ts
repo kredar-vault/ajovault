@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     const upstream =
       process.env.API_BASE_URL ??
+      process.env.NEXT_PUBLIC_API_BASE_URL ??
       process.env.NEXT_PUBLIC_API_URL ??
       "https://api.vault.staging.kredar.xyz";
     return [
