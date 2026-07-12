@@ -5,11 +5,13 @@ import { Loader2, Plus } from "lucide-react";
 import { useCircle } from "../layout";
 import { useGroupSettings, useUpdateGroupSettings } from "@/hooks/useGroups";
 import { SettingsFormGroups } from "@/components/userdashboard/settings/SettingsFormGroups";
+import { useAccount } from "@/hooks/useAccount";
 import Link from "next/link";
 
 export default function CircleSettings() {
   const { currentCircleId, isLoading: isCirclesLoading } = useCircle();
   const { data: groupSettings, isLoading: isSettingsLoading } = useGroupSettings(currentCircleId || "");
+  const { data: account } = useAccount();
   const updateSettingsMutation = useUpdateGroupSettings(currentCircleId || "");
 
   // Form State
@@ -148,6 +150,8 @@ export default function CircleSettings() {
             notifications={notifications}
             setNotifications={setNotifications}
             groupSettings={groupSettings}
+            groupId={currentCircleId || ""}
+            isCreator={groupSettings?.createdByUserId === account?.userId}
           />
 
           {/* Form Save Action Persistent Bar Spacer */}

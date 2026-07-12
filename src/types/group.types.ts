@@ -30,6 +30,7 @@ export interface Group {
   name: string;
   purpose: string;
   creatorId: string;
+  status?: string;
   expectedMembers: number;
   frequency: GroupFrequency;
   contributionAmount: number;
@@ -46,10 +47,20 @@ export interface Group {
 export interface GroupSettings {
   groupId: string;
   groupName?: string;
+  name?: string;
   purpose?: string;
   frequency?: GroupFrequency;
   contributionAmount?: number;
   firstPayoutRecipient?: string;
+  inviteCode?: string;
+  createdAt?: string;
+  status?: string;
+  currentMembers?: number;
+  maxMembers?: number;
+  createdByUserId?: string;
+  dvaAccountNumber?: string;
+  dvaBankName?: string;
+  dvaAccountName?: string;
 }
 
 export interface GroupMember {

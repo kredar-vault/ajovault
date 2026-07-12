@@ -1,8 +1,10 @@
 "use client";
 
-import React from "react";
-import { ShieldCheck, Link2, RefreshCw, AlertTriangle } from "lucide-react";
+import React, { useState } from "react";
+import { ShieldCheck, Link2, RefreshCw, AlertTriangle, Loader2 } from "lucide-react";
 import { SettingSection, ToggleRow, SettingInput, SettingSelect } from "./SettingsUI";
+import { useDeleteGroup, useLeaveGroup } from "@/hooks/useGroups";
+import { useRouter } from "next/navigation";
 
 interface SettingsFormGroupsProps {
   name: string;
@@ -22,6 +24,8 @@ interface SettingsFormGroupsProps {
   notifications: { reminder: boolean; payout: boolean; alert: boolean; joined: boolean; summary: boolean };
   setNotifications: (v: any) => void;
   groupSettings: any;
+  groupId: string;
+  isCreator: boolean;
 }
 
 export function SettingsFormGroups({
@@ -42,7 +46,34 @@ export function SettingsFormGroups({
   notifications,
   setNotifications,
   groupSettings,
+  groupId,
+  isCreator,
 }: SettingsFormGroupsProps) {
+  const router = useRouter();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const deleteGroup = useDeleteGroup(groupId);
+  const leaveGroup = useLeaveGroup(groupId);
+
+  const handleDelete = async () => {
+    if (!confirmDelete) { setConfirmDelete(true); return; }
+    try {
+      await deleteGroup.mutateAsync();
+      router.push("/dashboard");
+    } catch (err: any) {
+      alert(err?.message || "Failed to delete circle.");
+      setConfirmDelete(false);
+    }
+  };
+
+  const handleLeave = async () => {
+    if (!confirm("Are you sure you want to leave this circle?")) return;
+    try {
+      await leaveGroup.mutateAsync();
+      router.push("/dashboard");
+    } catch (err: any) {
+      alert(err?.message || "Failed to leave circle.");
+    }
+  };
   return (
     <>
       {/* 1. General Configuration Segment Block */}
@@ -227,10 +258,29 @@ export function SettingsFormGroups({
           </div>
           <div>
             <span className="text-[9px] font-bold text-[#9CA3AF] uppercase tracking-wider block">Status</span>
-            <span className="inline-block text-[10px] font-bold text-[#006C49] bg-[#DCFCE7] px-2 py-0.5 rounded-full mt-1">
-              Active
+            <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 ${groupSettings?.status === "Active" ? "text-[#006C49] bg-[#DCFCE7]" : "text-gray-500 bg-gray-100"}`}>
+              {groupSettings?.status ?? "—"}
             </span>
           </div>
+          <div>
+            <span className="text-[9px] font-bold text-[#9CA3AF] uppercase tracking-wider block">Members</span>
+            <p className="text-xs font-bold text-[#111827] mt-0.5">
+              {groupSettings?.currentMembers ?? "—"} / {groupSettings?.maxMembers ?? "—"}
+            </p>
+          </div>
+          <div>
+            <span className="text-[9px] font-bold text-[#9CA3AF] uppercase tracking-wider block">Contribution</span>
+            <p className="text-xs font-bold text-[#111827] mt-0.5">
+              {groupSettings?.contributionAmount ? `₦${groupSettings.contributionAmount.toLocaleString()}` : "—"}
+            </p>
+          </div>
+          {groupSettings?.dvaAccountNumber && (
+            <div className="col-span-2">
+              <span className="text-[9px] font-bold text-[#9CA3AF] uppercase tracking-wider block">Circle DVA</span>
+              <p className="text-xs font-bold text-[#111827] mt-0.5">{groupSettings.dvaAccountNumber} · {groupSettings.dvaBankName}</p>
+              <p className="text-[10px] text-gray-400">{groupSettings.dvaAccountName}</p>
+            </div>
+          )}
         </div>
       </SettingSection>
 
@@ -247,15 +297,23 @@ export function SettingsFormGroups({
         </div>
         
         <div className="divide-y divide-red-100/60 pt-2">
+          {!isCreator && (
           <div className="flex items-center justify-between py-3">
             <div>
               <h4 className="text-xs font-bold text-red-900 tracking-tight">Leave Circle</h4>
               <p className="text-[10px] text-red-700/70 font-medium mt-0.5">Exit group immediately. Safe exit rules check logic depends on cycle balances.</p>
             </div>
-            <button type="button" className="px-3 py-1.5 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-xl hover:bg-red-50 transition-all">
+            <button
+              type="button"
+              onClick={handleLeave}
+              disabled={leaveGroup.isPending}
+              className="px-3 py-1.5 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-xl hover:bg-red-50 transition-all disabled:opacity-50 flex items-center gap-1.5"
+            >
+              {leaveGroup.isPending && <Loader2 className="h-3 w-3 animate-spin" />}
               Leave
             </button>
           </div>
+          )}
 
           <div className="flex items-center justify-between py-3">
             <div>
@@ -277,15 +335,25 @@ export function SettingsFormGroups({
             </button>
           </div>
 
+          {isCreator && (
           <div className="flex items-center justify-between py-3">
             <div>
               <h4 className="text-xs font-bold text-red-900 tracking-tight">Delete Circle</h4>
-              <p className="text-[10px] text-red-700/70 font-medium mt-0.5">Completely wipe database records. Possible only if zero historical outstanding liabilities exist.</p>
+              <p className="text-[10px] text-red-700/70 font-medium mt-0.5">
+                {confirmDelete ? "Click again to confirm — this cannot be undone." : "Completely wipe database records. Possible only if zero historical outstanding liabilities exist."}
+              </p>
             </div>
-            <button type="button" className="px-3 py-1.5 bg-red-600 text-white font-bold text-xs rounded-xl hover:bg-red-700 transition-all shadow-sm">
-              Delete Circle
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleteGroup.isPending}
+              className={`px-3 py-1.5 font-bold text-xs rounded-xl transition-all shadow-sm flex items-center gap-1.5 disabled:opacity-50 ${confirmDelete ? "bg-red-800 text-white hover:bg-red-900 animate-pulse" : "bg-red-600 text-white hover:bg-red-700"}`}
+            >
+              {deleteGroup.isPending && <Loader2 className="h-3 w-3 animate-spin" />}
+              {confirmDelete ? "Confirm Delete" : "Delete Circle"}
             </button>
           </div>
+          )}
         </div>
       </div>
     </>
