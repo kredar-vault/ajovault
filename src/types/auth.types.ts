@@ -83,6 +83,7 @@ export type ForgotPasswordResponse = ApiResult<object>;
 
 export interface ResetPasswordRequest {
   email: string;
+  token: string;
   newPassword: string;
   confirmPassword: string;
 }
