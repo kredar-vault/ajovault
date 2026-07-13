@@ -49,11 +49,13 @@ export interface GroupSettings {
   groupName?: string;
   name?: string;
   purpose?: string;
+  description?: string;
   frequency?: GroupFrequency;
   contributionAmount?: number;
   firstPayoutRecipient?: string;
   inviteCode?: string;
   createdAt?: string;
+  startDate?: string;
   status?: string;
   currentMembers?: number;
   maxMembers?: number;

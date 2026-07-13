@@ -39,10 +39,12 @@ export default function CircleSettings() {
   // Sync state when DB settings load
   useEffect(() => {
     if (groupSettings) {
-      setName(groupSettings.groupName || "");
+      setName(groupSettings.groupName || groupSettings.name || "");
       setPurpose(groupSettings.purpose || "");
+      setDescription(groupSettings.description || "");
       setAmount(groupSettings.contributionAmount || 0);
       setFrequency(groupSettings.frequency || "monthly");
+      setMaxMembers(groupSettings.maxMembers || 20);
     }
   }, [groupSettings]);
 

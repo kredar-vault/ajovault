@@ -32,18 +32,20 @@ export function ToggleRow({ label, description, checked, onChange }: { label: st
 }
 
 // Custom Clean Form Input Fields
-export function SettingInput({ label, value, readOnly, type = "text", placeholder }: { label: string; value?: string | number; readOnly?: boolean; type?: string; placeholder?: string }) {
+export function SettingInput({ label, value, readOnly, type = "text", placeholder, onChange }: { label: string; value?: string | number; readOnly?: boolean; type?: string; placeholder?: string; onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
   return (
     <div className="space-y-1 w-full">
       <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">{label}</label>
       <input
         type={type}
-        defaultValue={value}
+        value={value ?? ""}
         placeholder={placeholder}
         disabled={readOnly}
+        onChange={onChange}
+        readOnly={!onChange && !readOnly}
         className={`w-full px-4 py-2.5 rounded-xl text-xs font-medium border transition-all ${
-          readOnly 
-            ? 'bg-slate-50 text-slate-500 border-gray-100 cursor-not-allowed font-semibold' 
+          readOnly
+            ? 'bg-slate-50 text-slate-500 border-gray-100 cursor-not-allowed font-semibold'
             : 'bg-white text-[#111827] border-gray-200 focus:border-[#006C49] focus:ring-1 focus:ring-[#006C49] outline-none'
         }`}
       />
@@ -52,12 +54,13 @@ export function SettingInput({ label, value, readOnly, type = "text", placeholde
 }
 
 // Custom Dropdowns
-export function SettingSelect({ label, value, options }: { label: string; value: string; options: string[] }) {
+export function SettingSelect({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void }) {
   return (
     <div className="space-y-1 w-full">
       <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">{label}</label>
       <select
-        defaultValue={value}
+        value={value}
+        onChange={onChange}
         className="w-full px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-[#111827] border border-gray-200 focus:border-[#006C49] focus:ring-1 focus:ring-[#006C49] outline-none appearance-none cursor-pointer"
       >
         {options.map((opt) => (
