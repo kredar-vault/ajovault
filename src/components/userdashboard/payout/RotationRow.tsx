@@ -1,9 +1,21 @@
 import React from "react";
-import { Clock } from "lucide-react";
+import { Clock, Banknote, Loader2 } from "lucide-react";
 import { RotationMember } from "@/types";
 import { TimelineDot, MemberAvatar, PayoutStatusBadge } from "./PayoutUi";
 
-export function RotationRow({ member, isLast }: { member: RotationMember; isLast: boolean }) {
+export function RotationRow({
+  member,
+  isLast,
+  isAdmin,
+  onDisburse,
+  isDisbursing,
+}: {
+  member: RotationMember;
+  isLast: boolean;
+  isAdmin?: boolean;
+  onDisburse?: (payoutId: string) => void;
+  isDisbursing?: boolean;
+}) {
   const isCurrent = member.status === 'CURRENT';
   const isPaid = member.status === 'PAID';
 
@@ -53,11 +65,21 @@ export function RotationRow({ member, isLast }: { member: RotationMember; isLast
             </div>
           </div>
 
-          <div className="text-right space-y-1">
+          <div className="text-right space-y-2">
             <p className={`text-sm tracking-tight ${isCurrent ? 'font-bold text-base text-[#111827]' : 'font-bold text-xs text-[#111827]'}`}>
               ₦{member.amount.toLocaleString()}
             </p>
             {member.status !== 'CURRENT' && <PayoutStatusBadge status={member.status} />}
+            {isCurrent && isAdmin && onDisburse && (
+              <button
+                onClick={() => onDisburse(member.id)}
+                disabled={isDisbursing}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#006C49] hover:bg-[#005439] text-white text-[10px] font-bold rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDisbursing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Banknote className="h-3 w-3" />}
+                Disburse
+              </button>
+            )}
           </div>
 
         </div>
