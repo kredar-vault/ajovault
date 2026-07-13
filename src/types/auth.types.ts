@@ -13,6 +13,9 @@ export interface AuthData {
   userId: string;
   fullName: string;
   email: string;
+  dvaAccountNumber?: string;
+  dvaAccountName?: string;
+  dvaBankName?: string;
 }
 
 // --- Signup ---

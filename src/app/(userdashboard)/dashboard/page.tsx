@@ -4,16 +4,18 @@ import { ActivityTable } from "@/components/userdashboard/dashboard/ActivityTabl
 import { PayoutCard } from "@/components/userdashboard/dashboard/PayoutCard";
 import { ProgressCard } from "@/components/userdashboard/dashboard/ProgressCard";
 import { StatsGrid } from "@/components/userdashboard/dashboard/StatsGrid";
-import { Plus, Loader2 } from "lucide-react";
-import { useCircle } from "../layout";
 import { useDashboardData } from "@/hooks/useDashboard";
-
+import { CircleDvaCard } from "@/components/userdashboard/dashboard/CircleDvaCard";
+import { Plus, SlidersHorizontal, Loader2 } from "lucide-react";
+import { useCircle } from "../layout";
+import { useGroupDetails } from "@/hooks/useGroups";
 import Link from "next/link";
 import { Button } from "@/components/shared/Button";
 
 export default function DashboardPage() {
   const { currentCircleId, isLoading: isCirclesLoading } = useCircle();
   const { data: dashboardData, isLoading: isDashboardLoading, error } = useDashboardData(currentCircleId || "");
+  const { data: groupDetails } = useGroupDetails(currentCircleId || "");
 
   if (isCirclesLoading || (currentCircleId && isDashboardLoading)) {
     return (
@@ -76,6 +78,13 @@ export default function DashboardPage() {
       </div>
 
       <StatsGrid stats={stats} loading={isDashboardLoading} />
+
+      <CircleDvaCard
+        circleName={groupDetails?.name}
+        accountNumber={groupDetails?.dvaAccountNumber}
+        accountName={groupDetails?.dvaAccountName}
+        bankName={groupDetails?.dvaBankName}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         <div className="lg:col-span-5 w-full min-w-0">
