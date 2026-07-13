@@ -128,6 +128,7 @@ export function useUpdateGroupSettings(groupId: string) {
   });
 }
 
+// Update this specific hook signature inside your hook file to match your explicit Member type:
 // 11. GET /groups/{groupId}/members
 export function useGroupMembers(groupId: string) {
   return useQuery<ApiResult<GroupMember[]>, Error, GroupMember[]>({

@@ -30,9 +30,8 @@ export interface SignupData {
   password: string;
 }
 
-export interface LoginResponse {
-  message: string;
-}
+export type SignupResponse = ApiResult<AuthData>;
+
 
 // --- OTP Verification (after signup) ---
 export interface VerifyOtpRequest {

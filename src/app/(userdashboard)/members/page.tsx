@@ -50,6 +50,10 @@ export default function MembersDashboard() {
     );
   }
 
+  // Look up the member with payoutPosition === 1 from the live network list
+  const nextPayoutMember = (members || []).find((m: any) => m.payoutPosition === 1);
+  const nextRecipientName = nextPayoutMember?.fullName || dashboardData?.payout?.recipientName || "None scheduled";
+
   const cycleInfo: CycleInfo = {
     name: groupDetails?.name || "Savings Circle",
     status: (groupDetails as any)?.status || "ACTIVE",
@@ -60,7 +64,7 @@ export default function MembersDashboard() {
   };
 
   const nextPayout: NextPayout = {
-    recipientName: dashboardData?.payout?.recipientName || "None scheduled",
+    recipientName: nextRecipientName,
     daysRemaining: dashboardData?.payout?.daysRemaining || 0,
     dateString: dashboardData?.payout?.daysRemaining ? `in ${dashboardData.payout.daysRemaining} days` : "N/A"
   };
@@ -72,15 +76,28 @@ export default function MembersDashboard() {
     pending: dashboardData?.stats?.pendingContributions || 0
   };
 
-  const mappedMembers: Member[] = (members || []).map((m) => {
-    const name = m.user?.fullName || "Group Member";
+  const mappedMembers: Member[] = (members || []).map((m: any) => {
+    const name = m.fullName || m.user?.fullName || "Member";
+    
+    const formattedDate = m.joinedAt 
+      ? new Date(m.joinedAt).toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : "N/A";
+
     return {
-      id: m.id || m.userId,
+      id: m.userId || m.memberId || m.id,
       name,
-      joinedDate: new Date(m.joinedAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
-      status: m.role === "OWNER" || m.role === "ADMIN" ? "Paid" : "Pending",
-      streakMonths: m.role === "OWNER" ? 12 : 1,
-      isNextPayout: dashboardData?.payout?.recipientName === name
+      joinedDate: formattedDate,
+      status: m.status || "Pending",
+      streakMonths: m.streakMonths || 0,
+      isNextPayout: m.payoutPosition === 1,
+      role: m.role
     };
   });
 
@@ -131,7 +148,7 @@ export default function MembersDashboard() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {mappedMembers.map((member) => (
-            <MemberCard key={member.id} member={member} />
+            <MemberCard key={member.id} member={member} currentUserId={member.id} />
           ))}
         </div>
       </div>
