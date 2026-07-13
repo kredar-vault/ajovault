@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ShieldCheck, Link2, RefreshCw, AlertTriangle, Loader2 } from "lucide-react";
 import { SettingSection, ToggleRow, SettingInput, SettingSelect } from "./SettingsUI";
 import { useDeleteGroup, useLeaveGroup } from "@/hooks/useGroups";
+import { useGroupPayouts, useCurrentPayout } from "@/hooks/usePayouts";
 import { useRouter } from "next/navigation";
 
 interface SettingsFormGroupsProps {
@@ -51,6 +52,8 @@ export function SettingsFormGroups({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const deleteGroup = useDeleteGroup(groupId);
   const leaveGroup = useLeaveGroup(groupId);
+  const { data: rotationList } = useGroupPayouts(groupId);
+  const { data: payoutSummary } = useCurrentPayout(groupId);
 
   const handleDelete = async () => {
     if (!confirmDelete) { setConfirmDelete(true); return; }
@@ -110,11 +113,45 @@ export function SettingsFormGroups({
       <SettingSection id="payout" title="Payout Rules" subtitle="How the circle pays members.">
         <div className="bg-slate-50 rounded-xl p-4 flex flex-col gap-2">
           <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">Current Rotation Order</label>
-          <p className="text-xs font-bold text-[#111827]">John Doe → Sarah Johnson → You → Michael Smith</p>
+          {rotationList && rotationList.length > 0 ? (
+            <p className="text-xs font-bold text-[#111827]">
+              {rotationList.map(m => m.name).join(" → ")}
+            </p>
+          ) : (
+            <p className="text-xs text-[#6B7280]">No rotation set yet.</p>
+          )}
           <button className="text-[11px] font-bold text-[#006C49] flex items-center gap-1 mt-2 w-max hover:underline" onClick={(e) => e.preventDefault()}>
             <RefreshCw className="h-3 w-3" /> Edit Payout Order
           </button>
         </div>
+        {payoutSummary && (
+          <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div>
+              <span className="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider block">Current Cycle</span>
+              <p className="font-bold text-[#111827] mt-0.5">{payoutSummary.currentCycle}</p>
+            </div>
+            <div>
+              <span className="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider block">Receiving Next</span>
+              <p className="font-bold text-[#111827] mt-0.5">{payoutSummary.currentRecipientName}</p>
+            </div>
+            <div>
+              <span className="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider block">After That</span>
+              <p className="font-bold text-[#111827] mt-0.5">{payoutSummary.nextRecipientName}</p>
+            </div>
+            <div>
+              <span className="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider block">Payouts Done</span>
+              <p className="font-bold text-[#111827] mt-0.5">{payoutSummary.payoutsDone} / {payoutSummary.totalMembers}</p>
+            </div>
+          </div>
+        )}
+        {rotationList && (() => {
+          const current = rotationList.find(m => m.status === "CURRENT");
+          return current?.dateInfo ? (
+            <p className="text-xs font-semibold text-[#006C49] bg-emerald-50 px-3 py-2 rounded-lg">
+              Next payout: {current.dateInfo}
+            </p>
+          ) : null;
+        })()}
         <div className="divide-y divide-gray-50 pt-2">
           <ToggleRow 
             label="Automatic Payout" 
@@ -254,6 +291,14 @@ export function SettingsFormGroups({
               {groupSettings?.createdAt ? new Date(groupSettings.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "N/A"}
             </p>
           </div>
+          {groupSettings?.startDate && (
+            <div>
+              <span className="text-[9px] font-bold text-[#9CA3AF] uppercase tracking-wider block">Rotation Started</span>
+              <p className="text-xs font-bold text-[#006C49] mt-0.5">
+                {new Date(groupSettings.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              </p>
+            </div>
+          )}
           <div>
             <span className="text-[9px] font-bold text-[#9CA3AF] uppercase tracking-wider block">Status</span>
             <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 ${groupSettings?.status === "Active" ? "text-[#006C49] bg-[#DCFCE7]" : "text-gray-500 bg-gray-100"}`}>
