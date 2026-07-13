@@ -1,5 +1,6 @@
 export interface DashboardStats {
   totalContribution: number;
+  circleBalance: number;
   totalMembers: number;
   pendingContributions: number;
   upcomingPayouts: number;

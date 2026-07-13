@@ -3,6 +3,7 @@ import { DashboardStats, ContributionProgress, PayoutSchedule, ActivityRow }  fr
 
 export const mockStats: DashboardStats = {
   totalContribution: 380000,
+  circleBalance: 380000,
   totalMembers: 25,
   pendingContributions: 25,
   upcomingPayouts: 2,

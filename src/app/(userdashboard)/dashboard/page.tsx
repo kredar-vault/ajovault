@@ -54,7 +54,7 @@ export default function DashboardPage() {
     );
   }
 
-  const stats = dashboardData?.stats || { totalContribution: 0, totalMembers: 0, pendingContributions: 0, upcomingPayouts: 0 };
+  const stats = dashboardData?.stats || { totalContribution: 0, circleBalance: 0, totalMembers: 0, pendingContributions: 0, upcomingPayouts: 0 };
   const progress = dashboardData?.progress || { month: "N/A", receivedCount: 0, pendingCount: 0, missedCount: 0, totalCount: 0 };
   const payout = dashboardData?.payout || { recipientName: "None", amount: 0, daysRemaining: 0 };
   const activity = dashboardData?.activity || [];
