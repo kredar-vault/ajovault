@@ -53,7 +53,11 @@ export function ActivityRow({ title, timestamp, source, amount, type, status }: 
         <p className={`text-xs font-bold ${isCredit ? 'text-[#006C49]' : 'text-[#111827]'}`}>
           {isCredit ? "+" : "-"}₦{amount.toLocaleString()}
         </p>
-        <span className="text-[9px] font-bold text-[#166534] block mt-0.5">{status}</span>
+        <span className={`text-[9px] font-bold block mt-0.5 ${
+          status === "Failed" ? "text-red-500" :
+          status === "Pending" ? "text-amber-500" :
+          "text-[#166534]"
+        }`}>{status}</span>
       </div>
     </div>
   );
