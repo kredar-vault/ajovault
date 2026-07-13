@@ -65,7 +65,7 @@ export function NotificationBell() {
       {/* Bell Button Icon */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-xl border border-white/10 lg:border-gray-100 hover:bg-white/10 lg:hover:bg-gray-50 text-white lg:text-gray-600 transition-colors shadow-sm focus:outline-none bg-white/5 lg:bg-white"
+        className="relative p-2 border border-white/10 lg:border-gray-100 hover:bg-white/10 lg:hover:bg-gray-50 text-white lg:text-gray-600 transition-colors focus:outline-none rounded-full"
       >
         <Bell className="h-4.5 w-4.5" />
         {unreadCount > 0 && (

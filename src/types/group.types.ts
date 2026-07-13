@@ -64,14 +64,24 @@ export interface GroupSettings {
 }
 
 export interface GroupMember {
-  id: string;
-  groupId: string;
+  // Supports both flat backend properties and standard database IDs
+  id?: string;
+  memberId: string;
   userId: string;
-  role: "OWNER" | "ADMIN" | "MEMBER";
+  fullName?: string;
+  email: string;
+  payoutPosition?: number;
+  role: "OWNER" | "ADMIN" | "MEMBER" | "Admin" | "Member";
   joinedAt: string;
+  
+  // Keep this optional as a fallback in case other endpoints use it
   user?: {
     id: string;
     email: string;
     fullName: string;
   };
+
+  // Optional status field for the UI badges
+  status?: "Paid" | "Pending" | "Missed";
+  isNextPayout?: boolean;
 }

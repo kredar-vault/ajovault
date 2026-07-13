@@ -10,6 +10,7 @@ import {
 } from "react";
 import { get, post } from "../lib/http";
 import { ENDPOINTS } from "../hooks/endpoints";
+import type { ApiResult } from "../types/auth.types";
 
 export interface SessionUser {
   userId: string;
@@ -55,8 +56,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshSession = useCallback(async () => {
     try {
-      const data = await get<SessionUser>(ENDPOINTS.account.root);
-      setUser(data);
+      // Backend wraps this (like every other endpoint) in { isSuccess, message, data }.
+      // get() only unwraps axios's response.data — it does NOT unwrap this envelope,
+      // so the actual user record is one level deeper, at result.data.
+      const result = await get<ApiResult<SessionUser>>(ENDPOINTS.account.root);
+      setUser(result?.data ?? null);
     } catch {
       setUser(null);
     } finally {
