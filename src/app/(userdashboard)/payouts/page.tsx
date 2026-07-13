@@ -3,16 +3,31 @@
 import React from "react";
 import { ShieldCheck, MessageSquare, Loader2, Plus } from "lucide-react";
 import { useCircle } from "../layout";
-import { useCurrentPayout, useGroupPayouts } from "@/hooks/usePayouts";
+import { useCurrentPayout, useGroupPayouts, useDisbursePayout } from "@/hooks/usePayouts";
+import { useGroupSettings } from "@/hooks/useGroups";
+import { useSession } from "@/lib/auth";
 import { MemberAvatar, SummaryCard } from "@/components/userdashboard/payout/PayoutUi";
 import { RotationRow } from "@/components/userdashboard/payout/RotationRow";
 import Link from "next/link";
 
 export default function PayoutSchedule() {
   const { currentCircleId, isLoading: isCirclesLoading } = useCircle();
+  const { user } = useSession();
 
   const { data: currentPayout, isLoading: isCurrentLoading } = useCurrentPayout(currentCircleId || "");
   const { data: rotationList, isLoading: isRotationLoading } = useGroupPayouts(currentCircleId || "");
+  const { data: groupSettings } = useGroupSettings(currentCircleId || "");
+  const disburseMutation = useDisbursePayout(currentCircleId || "");
+
+  const isAdmin = !!user && !!groupSettings && user.userId === groupSettings.createdByUserId;
+
+  const handleDisburse = (payoutId: string) => {
+    if (!confirm("Disburse this payout now? The funds will be sent to the recipient immediately.")) return;
+    disburseMutation.mutate(payoutId, {
+      onSuccess: () => alert("Payout disbursed successfully!"),
+      onError: (err) => alert(`Failed to disburse: ${err.message}`),
+    });
+  };
 
   const isLoading = isCirclesLoading || isCurrentLoading || isRotationLoading;
 
@@ -108,10 +123,13 @@ export default function PayoutSchedule() {
           ) : (
             <div className="pl-1">
               {rotations.map((member, index) => (
-                <RotationRow 
-                  key={member.id} 
-                  member={member} 
-                  isLast={index === rotations.length - 1} 
+                <RotationRow
+                  key={member.id}
+                  member={member}
+                  isLast={index === rotations.length - 1}
+                  isAdmin={isAdmin}
+                  onDisburse={handleDisburse}
+                  isDisbursing={disburseMutation.isPending}
                 />
               ))}
             </div>
