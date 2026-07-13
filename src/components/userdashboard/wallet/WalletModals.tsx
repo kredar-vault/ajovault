@@ -337,7 +337,7 @@ export function SendPayoutModal({ onClose, balance = 0 }: ModalProps & { balance
     );
   }
 
-  const activeGroups = groups?.filter((g: Group) => g.status === "Active") ?? [];
+  const activeGroups = groups?.filter((g: Group) => g.status === "Active" || g.status === "Open") ?? [];
 
   return (
     <Modal onClose={onClose} title="Send to Savings">
