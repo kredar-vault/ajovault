@@ -61,7 +61,7 @@ http.interceptors.response.use(
       window.dispatchEvent(new Event("auth:logout"));
       if (typeof window !== "undefined") {
         const path = window.location.pathname;
-        const guestPaths = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify-otp"];
+        const guestPaths = ["/", "/login", "/signup", "/forgot-password", "/reset-password", "/verify-otp", "/learn-more"];
         const isJoinPage = path.startsWith("/join/");
         if (!guestPaths.includes(path) && !isJoinPage) {
           window.location.href = "/login";
