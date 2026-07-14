@@ -43,10 +43,10 @@ export function Login() {
           <div className="ml-auto w-fit transform rounded-xl border border-white/10 bg-white/5 backdrop-blur-md p-4 transition-transform hover:scale-[1.02]">
             <div className="flex items-start gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#19AEE8]/20 font-bold text-[#19AEE8] text-sm">
-                D
+                M
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs font-semibold text-gray-300">David</p>
+                <p className="text-xs font-semibold text-gray-300">Mairo</p>
                 <p className="text-sm font-bold text-white">Joined the circle</p>
                 <p className="text-[10px] text-gray-400">Monthly Rotation</p>
               </div>
