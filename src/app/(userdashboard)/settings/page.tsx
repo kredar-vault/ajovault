@@ -6,6 +6,7 @@ import { useCircle } from "../layout";
 import { useGroupSettings, useUpdateGroupSettings } from "@/hooks/useGroups";
 import { SettingsFormGroups } from "@/components/userdashboard/settings/SettingsFormGroups";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 export default function CircleSettings() {
   const { currentCircleId, isLoading: isCirclesLoading } = useCircle();
@@ -62,10 +63,11 @@ export default function CircleSettings() {
       frequency: frequency as any,
     }, {
       onSuccess: () => {
-        alert("Settings successfully saved!");
+        toast.success("Settings saved.");
       },
-      onError: (err) => {
-        alert(`Failed to save settings: ${err.message}`);
+      onError: (err: any) => {
+        const msg = err?.response?.data?.message || err?.message || "Failed to save settings.";
+        toast.error(msg);
       }
     });
   };

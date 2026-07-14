@@ -6,6 +6,7 @@ import { SettingSection, ToggleRow, SettingInput, SettingSelect } from "./Settin
 import { useDeleteGroup, useLeaveGroup } from "@/hooks/useGroups";
 import { useGroupPayouts, useCurrentPayout } from "@/hooks/usePayouts";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface SettingsFormGroupsProps {
   name: string;
@@ -50,6 +51,7 @@ export function SettingsFormGroups({
 }: SettingsFormGroupsProps) {
   const router = useRouter();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmLeave, setConfirmLeave] = useState(false);
   const deleteGroup = useDeleteGroup(groupId);
   const leaveGroup = useLeaveGroup(groupId);
   const { data: rotationList } = useGroupPayouts(groupId);
@@ -61,18 +63,21 @@ export function SettingsFormGroups({
       await deleteGroup.mutateAsync();
       router.push("/dashboard");
     } catch (err: any) {
-      alert(err?.message || "Failed to delete circle.");
+      const msg = err?.response?.data?.message || err?.message || "Failed to delete circle.";
+      toast.error(msg);
       setConfirmDelete(false);
     }
   };
 
   const handleLeave = async () => {
-    if (!confirm("Are you sure you want to leave this circle?")) return;
+    if (!confirmLeave) { setConfirmLeave(true); return; }
     try {
       await leaveGroup.mutateAsync();
       router.push("/dashboard");
     } catch (err: any) {
-      alert(err?.message || "Failed to leave circle.");
+      const msg = err?.response?.data?.message || err?.message || "Failed to leave circle.";
+      toast.error(msg);
+      setConfirmLeave(false);
     }
   };
   return (
@@ -227,7 +232,7 @@ export function SettingsFormGroups({
               onClick={() => {
                 if (groupSettings?.inviteCode) {
                   navigator.clipboard.writeText(`https://ajovault.com/invite/${groupSettings.inviteCode}`);
-                  alert("Invite link copied to clipboard!");
+                  toast.success("Invite link copied!");
                 }
               }}
               className="px-4 py-2.5 bg-[#111827] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 hover:bg-black transition-colors shrink-0"
@@ -343,16 +348,18 @@ export function SettingsFormGroups({
           <div className="flex items-center justify-between py-3">
             <div>
               <h4 className="text-xs font-bold text-red-900 tracking-tight">Leave Circle</h4>
-              <p className="text-[10px] text-red-700/70 font-medium mt-0.5">Exit group immediately. Safe exit rules check logic depends on cycle balances.</p>
+              <p className="text-[10px] text-red-700/70 font-medium mt-0.5">
+                {confirmLeave ? "Click again to confirm — you will lose access immediately." : "Exit this circle. You will need an invite to rejoin."}
+              </p>
             </div>
             <button
               type="button"
               onClick={handleLeave}
               disabled={leaveGroup.isPending}
-              className="px-3 py-1.5 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-xl hover:bg-red-50 transition-all disabled:opacity-50 flex items-center gap-1.5"
+              className={`px-3 py-1.5 font-bold text-xs rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 ${confirmLeave ? "bg-red-600 text-white hover:bg-red-700 animate-pulse" : "bg-white border border-red-200 text-red-600 hover:bg-red-50"}`}
             >
               {leaveGroup.isPending && <Loader2 className="h-3 w-3 animate-spin" />}
-              Leave
+              {confirmLeave ? "Confirm Leave" : "Leave"}
             </button>
           </div>
 
@@ -363,7 +370,7 @@ export function SettingsFormGroups({
             </div>
             <button
               type="button"
-              onClick={() => alert("Transfer ownership coming soon.")}
+              onClick={() => toast("Transfer ownership is coming soon.", { icon: "🔒" })}
               className="px-3 py-1.5 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-xl hover:bg-red-50 transition-all"
             >
               Transfer
@@ -377,7 +384,7 @@ export function SettingsFormGroups({
             </div>
             <button
               type="button"
-              onClick={() => alert("Archive circle coming soon.")}
+              onClick={() => toast("Archive circle is coming soon.", { icon: "📦" })}
               className="px-3 py-1.5 bg-white border border-red-200 text-red-600 font-bold text-xs rounded-xl hover:bg-red-50 transition-all"
             >
               Archive
