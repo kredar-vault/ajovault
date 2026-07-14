@@ -2,6 +2,15 @@
 
 import React, { useState } from "react";
 import { X, Copy, Check, Loader2 } from "lucide-react";
+
+function parseApiError(err: unknown, fallback = "Something went wrong. Please try again."): string {
+  const e = err as any;
+  const msg: string = e?.response?.data?.message || e?.message || "";
+  if (!msg) return fallback;
+  if (msg.includes("Nomba") || msg.includes("transfers/bank")) return "Transfer failed. Please try again later.";
+  if (msg.startsWith("Transfer failed:")) return msg.replace("Transfer failed:", "").trim() || fallback;
+  return msg;
+}
 import { useWithdraw, useLookupBank, useSetBankAccount } from "@/hooks/useWallet";
 import { useMyGroups } from "@/hooks/useGroups";
 import { useCreateContribution } from "@/hooks/useContributions";
@@ -283,7 +292,7 @@ export function WithdrawModal({ onClose, balance = 0, bankAccount }: ModalProps 
         </div>
 
         {withdrawError && (
-          <p className="text-xs text-red-500 font-medium">{(withdrawError as Error).message}</p>
+          <p className="text-xs text-red-500 font-medium">{parseApiError(withdrawError)}</p>
         )}
 
         <button
@@ -381,7 +390,7 @@ export function SendPayoutModal({ onClose, balance = 0 }: ModalProps & { balance
         )}
 
         {error && (
-          <p className="text-xs text-red-500 font-medium">{(error as Error).message}</p>
+          <p className="text-xs text-red-500 font-medium">{parseApiError(error)}</p>
         )}
 
         <button

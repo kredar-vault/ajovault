@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { ShieldCheck, MessageSquare, Loader2, Plus } from "lucide-react";
 import { useCircle } from "../layout";
 import { useCurrentPayout, useGroupPayouts, useDisbursePayout } from "@/hooks/usePayouts";
@@ -9,6 +9,16 @@ import { useSession } from "@/lib/auth";
 import { MemberAvatar, SummaryCard } from "@/components/userdashboard/payout/PayoutUi";
 import { RotationRow } from "@/components/userdashboard/payout/RotationRow";
 import Link from "next/link";
+import toast from "react-hot-toast";
+
+function parseApiError(err: unknown, fallback = "Something went wrong. Please try again."): string {
+  const e = err as any;
+  const msg: string = e?.response?.data?.message || e?.message || "";
+  if (!msg) return fallback;
+  if (msg.includes("Nomba") || msg.includes("transfers/bank")) return "Transfer failed. Please try again later.";
+  if (msg.startsWith("Transfer failed:")) return msg.replace("Transfer failed:", "").trim() || fallback;
+  return msg;
+}
 
 export default function PayoutSchedule() {
   const { currentCircleId, isLoading: isCirclesLoading } = useCircle();
@@ -21,12 +31,22 @@ export default function PayoutSchedule() {
 
   const isAdmin = !!user && !!groupSettings && user.userId === groupSettings.createdByUserId;
 
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingPayoutId, setPendingPayoutId] = useState<string | null>(null);
+
   const handleDisburse = (payoutId: string) => {
-    if (!confirm("Disburse this payout now? The funds will be sent to the recipient immediately.")) return;
-    disburseMutation.mutate(payoutId, {
-      onSuccess: () => alert("Payout disbursed successfully!"),
-      onError: (err) => alert(`Failed to disburse: ${err.message}`),
+    setPendingPayoutId(payoutId);
+    setShowConfirm(true);
+  };
+
+  const confirmDisburse = () => {
+    if (!pendingPayoutId) return;
+    setShowConfirm(false);
+    disburseMutation.mutate(pendingPayoutId, {
+      onSuccess: () => toast.success("Payout disbursed successfully!"),
+      onError: (err) => toast.error(parseApiError(err, "Failed to disburse payout.")),
     });
+    setPendingPayoutId(null);
   };
 
   const isLoading = isCirclesLoading || isCurrentLoading || isRotationLoading;
@@ -171,5 +191,40 @@ export default function PayoutSchedule() {
       </div>
 
     </div>
+
+    {showConfirm && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+        onClick={() => setShowConfirm(false)}
+      >
+        <div
+          className="bg-white rounded-3xl shadow-xl w-full max-w-sm p-6 space-y-5"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="space-y-1">
+            <h2 className="text-base font-bold text-[#111827]">Disburse Payout?</h2>
+            <p className="text-sm text-[#6B7280] font-medium leading-relaxed">
+              Funds will be sent to the recipient immediately. This action cannot be undone.
+            </p>
+          </div>
+          <div className="flex gap-3 pt-1">
+            <button
+              onClick={() => setShowConfirm(false)}
+              className="flex-1 border border-gray-200 text-sm font-bold text-[#374151] rounded-2xl py-3 hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDisburse}
+              disabled={disburseMutation.isPending}
+              className="flex-1 bg-[#006C49] text-white text-sm font-bold rounded-2xl py-3 hover:bg-[#005a3d] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {disburseMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+              {disburseMutation.isPending ? "Disbursing..." : "Yes, Disburse"}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   );
 }
