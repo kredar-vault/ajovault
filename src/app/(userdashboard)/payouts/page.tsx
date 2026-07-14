@@ -91,6 +91,7 @@ export default function PayoutSchedule() {
   const progressPercent = summary.totalMembers > 0 ? (summary.payoutsDone / summary.totalMembers) * 100 : 0;
 
   return (
+    <>
     <div className="w-full min-h-screen p-6 md:p-8 space-y-6 font-sans selection:bg-emerald-100">
       
       {/* Title Segment */}
@@ -226,5 +227,6 @@ export default function PayoutSchedule() {
         </div>
       </div>
     )}
+    </>
   );
 }
